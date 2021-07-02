@@ -9,6 +9,7 @@ import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagedList
+import androidx.paging.PagingData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -52,7 +53,7 @@ import javax.inject.Inject
 import javax.inject.Named
 import kotlin.properties.Delegates
 
-typealias PagedPostList = PagedList<PostListItemType>
+typealias PagedPostList = PagingData<PostListItemType>
 
 private const val SEARCH_DELAY_MS = 500L
 private const val SEARCH_PROGRESS_INDICATOR_DELAY_MS = 500L
@@ -343,21 +344,21 @@ class PostListViewModel @Inject constructor(
     }
 
     private fun updateScrollPosition(data: PagedPostList, localPostId: LocalPostId) {
-        val position = findItemListPosition(data, localPostId)
-        position?.let {
-            _scrollToPosition.value = it
-        } ?: AppLog.e(AppLog.T.POSTS, "ScrollToPost failed - the post not found.")
+//        val position = findItemListPosition(data, localPostId)
+//        position?.let {
+//            _scrollToPosition.value = it
+//        } ?: AppLog.e(AppLog.T.POSTS, "ScrollToPost failed - the post not found.")
     }
 
-    private fun findItemListPosition(data: PagedPostList, localPostId: LocalPostId): Int? {
-        return data.listIterator().withIndex().asSequence().find { listItem ->
-            if (listItem.value is PostListItemUiState) {
-                (listItem.value as PostListItemUiState).data.localPostId == localPostId
-            } else {
-                false
-            }
-        }?.index
-    }
+//    private fun findItemListPosition(data: PagedPostList, localPostId: LocalPostId): Int? {
+//        return data.listIterator().withIndex().asSequence().find { listItem ->
+//            if (listItem.value is PostListItemUiState) {
+//                (listItem.value as PostListItemUiState).data.localPostId == localPostId
+//            } else {
+//                false
+//            }
+//        }?.index
+//    }
 
     private fun transformPostModelToPostListItemUiState(post: PostModel): PostListItemUiState {
         val hasAutoSave = connector.hasAutoSave(post)

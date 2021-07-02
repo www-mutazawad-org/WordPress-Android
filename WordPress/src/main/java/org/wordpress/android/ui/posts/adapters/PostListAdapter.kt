@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.paging.PagedListAdapter
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import org.wordpress.android.R
@@ -33,7 +33,7 @@ class PostListAdapter(
     context: Context,
     private val imageManager: ImageManager,
     private val uiHelpers: UiHelpers
-) : PagedListAdapter<PostListItemType, ViewHolder>(PostListDiffItemCallback) {
+) : PagingDataAdapter<PostListItemType, ViewHolder>(PostListDiffItemCallback) {
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private var itemLayoutType: PostListViewLayoutType = PostListViewLayoutType.defaultValue
 
