@@ -154,9 +154,8 @@ class ScanViewModelTest : BaseUnitTest() {
             }
 
     @Test
-    fun `given no network, when scan state fetched over empty scan state, then app reaches no connection state`() =
+    fun `given no network, when scan state fetched on init, then app reaches no connection state`() =
             test {
-                whenever(scanStore.getScanStateForSite(site)).thenReturn(null)
                 whenever(fetchScanStateUseCase.fetchScanState(site)).thenReturn(flowOf(Failure.NetworkUnavailable))
                 val uiStates = init().uiStates
 
@@ -164,9 +163,8 @@ class ScanViewModelTest : BaseUnitTest() {
             }
 
     @Test
-    fun `given no connection state, when scan state fetched over empty scan state, then no network ui is shown`() =
+    fun `given no connection state, when scan state fetched on init, then no network ui is shown`() =
             test {
-                whenever(scanStore.getScanStateForSite(site)).thenReturn(null)
                 whenever(fetchScanStateUseCase.fetchScanState(site)).thenReturn(flowOf(Failure.NetworkUnavailable))
                 val uiStates = init().uiStates
 
@@ -180,18 +178,24 @@ class ScanViewModelTest : BaseUnitTest() {
             }
 
     @Test
-    fun `given no network, when scan state fetched over last scan state, then no network msg is shown`() = test {
-        whenever(fetchScanStateUseCase.fetchScanState(site)).thenReturn(flowOf(Failure.NetworkUnavailable))
+    fun `given no network, when scan state fetch invoked by user, then no network msg is shown`() = test {
+        whenever(fetchScanStateUseCase.fetchScanState(site)).thenReturn(flowOf(Success(fakeScanStateModel)))
+        whenever(fetchScanStateUseCase.fetchScanState(site, startWithDelay = true))
+                .thenReturn(flowOf(Failure.NetworkUnavailable))
+        whenever(startScanUseCase.startScan(any())).thenReturn(flowOf(StartScanState.Success))
         val observers = init()
+
+        // Start scan invoked by user, fetches scan state on success
+        (observers.uiStates.last() as ContentUiState).items
+                .filterIsInstance<ActionButtonState>().first().onClick.invoke()
 
         val snackBarMsg = observers.snackBarMsgs.last().peekContent()
         assertThat(snackBarMsg).isEqualTo(SnackbarMessageHolder(UiStringRes(R.string.error_generic_network)))
     }
 
     @Test
-    fun `given fetch scan fails, when scan state fetched over empty scan state, then app reaches failed ui state`() =
+    fun `given fetch scan fails, when scan state fetched on init, then app reaches failed ui state`() =
             test {
-                whenever(scanStore.getScanStateForSite(site)).thenReturn(null)
                 whenever(fetchScanStateUseCase.fetchScanState(site)).thenReturn(flowOf(Failure.RemoteRequestFailure))
                 val uiStates = init().uiStates
 
@@ -199,9 +203,8 @@ class ScanViewModelTest : BaseUnitTest() {
             }
 
     @Test
-    fun `given request failed ui state, when scan state fetched over empty scan state, then request failed ui shown`() =
+    fun `given request failed ui state, when scan state fetched on init, then request failed ui shown`() =
             test {
-                whenever(scanStore.getScanStateForSite(site)).thenReturn(null)
                 whenever(fetchScanStateUseCase.fetchScanState(site)).thenReturn(flowOf(Failure.RemoteRequestFailure))
                 val uiStates = init().uiStates
 
@@ -215,10 +218,17 @@ class ScanViewModelTest : BaseUnitTest() {
             }
 
     @Test
-    fun `given fetch scan state fails, when scan state fetched over last scan state, then request failed msg shown`() =
+    fun `given fetch scan state fails, when scan state fetch invoked by user, then request failed msg shown`() =
             test {
-                whenever(fetchScanStateUseCase.fetchScanState(site)).thenReturn(flowOf(Failure.RemoteRequestFailure))
+                whenever(fetchScanStateUseCase.fetchScanState(site)).thenReturn(flowOf(Success(fakeScanStateModel)))
+                whenever(fetchScanStateUseCase.fetchScanState(site, startWithDelay = true))
+                        .thenReturn(flowOf(Failure.RemoteRequestFailure))
+                whenever(startScanUseCase.startScan(any())).thenReturn(flowOf(StartScanState.Success))
                 val observers = init()
+
+                // Start scan invoked by user, fetches scan state on success
+                (observers.uiStates.last() as ContentUiState).items
+                        .filterIsInstance<ActionButtonState>().first().onClick.invoke()
 
                 val snackBarMsg = observers.snackBarMsgs.last().peekContent()
                 assertThat(snackBarMsg).isEqualTo(SnackbarMessageHolder(UiStringRes(R.string.request_failed_message)))
