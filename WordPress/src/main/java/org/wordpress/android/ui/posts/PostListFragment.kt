@@ -10,6 +10,7 @@ import android.widget.ProgressBar
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import org.wordpress.android.R
@@ -153,7 +154,7 @@ class PostListFragment : ViewPagerFragment() {
         if (postListType == SEARCH) {
             mainViewModel.searchQuery.observe(viewLifecycleOwner, Observer {
                 if (TextUtils.isEmpty(it)) {
-                    postListAdapter.submitList(null)
+                    postListAdapter.submitData(viewLifecycleOwner.lifecycle, PagingData.empty())
                 }
                 viewModel.search(it)
             })
@@ -227,7 +228,7 @@ class PostListFragment : ViewPagerFragment() {
      */
     private fun updatePagedListData(pagedListData: PagedPostList) {
         val recyclerViewState = recyclerView?.layoutManager?.onSaveInstanceState()
-        postListAdapter.submitList(pagedListData)
+        postListAdapter.submitData(viewLifecycleOwner.lifecycle, pagedListData)
         recyclerView?.post {
             (recyclerView?.layoutManager as? LinearLayoutManager)?.let { layoutManager ->
                 if (layoutManager.findFirstVisibleItemPosition() < MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION) {
