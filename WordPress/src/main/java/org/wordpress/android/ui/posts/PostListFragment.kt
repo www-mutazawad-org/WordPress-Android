@@ -11,9 +11,15 @@ import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
+import androidx.paging.LoadState.NotLoading
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.wordpress.android.R
 import org.wordpress.android.WordPress
@@ -182,6 +188,24 @@ class PostListFragment : ViewPagerFragment() {
                 recyclerView?.scrollToPosition(index)
             }
         })
+        lifecycleScope.launchWhenCreated {
+            postListAdapter.loadStateFlow.collectLatest { loadStates ->
+                viewModel.onEmptyListStateToggled(
+                        loadStates.refresh is LoadState.NotLoading
+                                && loadStates.append.endOfPaginationReached && postListAdapter.itemCount == 0
+                )
+            }
+        }
+
+        lifecycleScope.launchWhenCreated {
+            postListAdapter.loadStateFlow.map { it.refresh }
+                    .distinctUntilChanged()
+                    .collect {
+                        if (it is NotLoading) {
+                            viewModel.onListDataSnapshotChanged(postListAdapter.snapshot())
+                        }
+                    }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

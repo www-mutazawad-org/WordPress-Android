@@ -6,15 +6,15 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagedList
+import androidx.paging.ItemSnapshotList
 import androidx.paging.PagingData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.PostModel
@@ -113,6 +113,10 @@ class PostListViewModel @Inject constructor(
     private val _isLoadingMore = MediatorLiveData<Boolean>()
     val isLoadingMore: LiveData<Boolean> = _isLoadingMore
 
+    private val _isEmpty = MutableLiveData<Boolean>()
+
+    private val _dataSnapshot = MutableLiveData<ItemSnapshotList<PostListItemType>>()
+
     private val _isFetchingFirstPage = MediatorLiveData<Boolean>()
     val isFetchingFirstPage: LiveData<Boolean> = _isFetchingFirstPage
 
@@ -166,8 +170,7 @@ class PostListViewModel @Inject constructor(
         _pagedListData.addSource(pagedListWrapper.data) { pagedPostList ->
             pagedPostList?.let {
                 if (isSearchResultDeliverable()) {
-                    onDataUpdated(it)
-                    _pagedListData.value = it
+                    _pagedListData.postValue(it)
                 }
             }
         }
@@ -202,7 +205,7 @@ class PostListViewModel @Inject constructor(
         pagedListWrapper?.let {
             _pagedListData.removeSource(it.data)
             _emptyViewState.removeSource(pagedListData)
-            _emptyViewState.removeSource(it.isEmpty)
+            _emptyViewState.removeSource(_isEmpty)
             _emptyViewState.removeSource(it.isFetchingFirstPage)
             _emptyViewState.removeSource(it.listError)
             _isFetchingFirstPage.removeSource(it.isFetchingFirstPage)
@@ -239,7 +242,7 @@ class PostListViewModel @Inject constructor(
                     isNetworkAvailable = networkUtilsWrapper.isNetworkAvailable(),
                     isLoadingData = pagedListWrapper.isFetchingFirstPage.value ?: false ||
                             pagedListWrapper.data.value == null,
-                    isListEmpty = pagedListWrapper.isEmpty.value ?: true,
+                    isListEmpty = _isEmpty.value ?: true,
                     isSearchPromptRequired = isEmptySearch(),
                     error = pagedListWrapper.listError.value,
                     fetchFirstPage = this::fetchFirstPage,
@@ -247,7 +250,7 @@ class PostListViewModel @Inject constructor(
             )
         }
 
-        _emptyViewState.addSource(pagedListWrapper.isEmpty) { _emptyViewState.postValue(update()) }
+        _emptyViewState.addSource(_isEmpty) { _emptyViewState.postValue(update()) }
         _emptyViewState.addSource(pagedListWrapper.isFetchingFirstPage) { _emptyViewState.postValue(update()) }
         _emptyViewState.addSource(pagedListWrapper.listError) { _emptyViewState.postValue(update()) }
     }
@@ -320,7 +323,7 @@ class PostListViewModel @Inject constructor(
     }
 
     fun scrollToPost(localPostId: LocalPostId) {
-        val data = pagedListData.value
+        val data = _dataSnapshot.value
         if (data != null) {
             updateScrollPosition(data, localPostId)
         } else {
@@ -329,13 +332,22 @@ class PostListViewModel @Inject constructor(
         }
     }
 
+    fun onEmptyListStateToggled(isEmpty: Boolean) {
+        _isEmpty.postValue(isEmpty)
+    }
+
+    fun onListDataSnapshotChanged(snapshot: ItemSnapshotList<PostListItemType>){
+        _dataSnapshot.value = snapshot
+        onDataUpdated(snapshot)
+    }
+
     // Utils
 
     private fun fetchFirstPage() {
         pagedListWrapper?.fetchFirstPage()
     }
 
-    private fun onDataUpdated(data: PagedPostList) {
+    private fun onDataUpdated(data: ItemSnapshotList<PostListItemType>) {
         val localPostId = scrollToLocalPostId
         if (localPostId != null) {
             scrollToLocalPostId = null
@@ -343,22 +355,22 @@ class PostListViewModel @Inject constructor(
         }
     }
 
-    private fun updateScrollPosition(data: PagedPostList, localPostId: LocalPostId) {
-//        val position = findItemListPosition(data, localPostId)
-//        position?.let {
-//            _scrollToPosition.value = it
-//        } ?: AppLog.e(AppLog.T.POSTS, "ScrollToPost failed - the post not found.")
+    private fun updateScrollPosition(data: ItemSnapshotList<PostListItemType>, localPostId: LocalPostId) {
+        val position = findItemListPosition(data, localPostId)
+        position?.let {
+            _scrollToPosition.value = it
+        } ?: AppLog.e(AppLog.T.POSTS, "ScrollToPost failed - the post not found.")
     }
 
-//    private fun findItemListPosition(data: PagedPostList, localPostId: LocalPostId): Int? {
-//        return data.listIterator().withIndex().asSequence().find { listItem ->
-//            if (listItem.value is PostListItemUiState) {
-//                (listItem.value as PostListItemUiState).data.localPostId == localPostId
-//            } else {
-//                false
-//            }
-//        }?.index
-//    }
+    private fun findItemListPosition(data: ItemSnapshotList<PostListItemType>, localPostId: LocalPostId): Int? {
+        return data.listIterator().withIndex().asSequence().find { listItem ->
+            if (listItem.value is PostListItemUiState) {
+                (listItem.value as PostListItemUiState).data.localPostId == localPostId
+            } else {
+                false
+            }
+        }?.index
+    }
 
     private fun transformPostModelToPostListItemUiState(post: PostModel): PostListItemUiState {
         val hasAutoSave = connector.hasAutoSave(post)
