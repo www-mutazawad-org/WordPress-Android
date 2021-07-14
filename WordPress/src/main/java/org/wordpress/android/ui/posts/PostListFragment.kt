@@ -16,11 +16,13 @@ import androidx.paging.LoadState.NotLoading
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.wordpress.android.R
 import org.wordpress.android.WordPress
 import org.wordpress.android.fluxc.model.SiteModel
@@ -253,9 +255,11 @@ class PostListFragment : ViewPagerFragment() {
      * after changes are reflected.
      */
     private fun updatePagedListData(pagedListData: PagedPostList) {
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             val recyclerViewState = recyclerView?.layoutManager?.onSaveInstanceState()
-            postListAdapter.submitData(pagedListData)
+            withContext(Dispatchers.Default) {
+                postListAdapter.submitData(pagedListData)
+            }
             recyclerView?.post {
                 (recyclerView?.layoutManager as? LinearLayoutManager)?.let { layoutManager ->
                     if (layoutManager.findFirstVisibleItemPosition() < MAX_INDEX_FOR_VISIBLE_ITEM_TO_KEEP_SCROLL_POSITION) {
