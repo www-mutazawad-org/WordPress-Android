@@ -197,12 +197,14 @@ class UnifiedCommentListViewModel @Inject constructor(
                                     buttonAction = {
                                         launch(bgDispatcher) {
                                             commentInModeration = 0
+                                            val parameters = ModerateCommentParameters(
+                                                    selectedSiteRepository.getSelectedSite()!!,
+                                                    it.data.remoteCommentId,
+                                                    it.data.oldStatus
+                                            )
                                             unifiedCommentsListHandler.undoCommentModeration(
-                                                    ModerateCommentParameters(
-                                                            selectedSiteRepository.getSelectedSite()!!,
-                                                            it.data.remoteCommentId,
-                                                            it.data.oldStatus
-                                                    )
+                                                    parameters,
+                                                    Pair(parameters.site.siteId, parameters.remoteCommentId)
                                             )
                                         }
                                     },
@@ -219,7 +221,8 @@ class UnifiedCommentListViewModel @Inject constructor(
                                                         OnDeleteComment(parameters)
                                                     } else {
                                                         OnPushComment(parameters)
-                                                    }
+                                                    },
+                                                    Pair(parameters.site.siteId, parameters.remoteCommentId)
                                                 )
                                             }
                                         }
@@ -280,7 +283,8 @@ class UnifiedCommentListViewModel @Inject constructor(
                         newStatus
                 )
                 unifiedCommentsListHandler.moderateWithUndoSupport(
-                        OnModerateComment(parameters)
+                        OnModerateComment(parameters),
+                        Pair(parameters.site.siteId, parameters.remoteCommentId)
                 )
             } else {
                 launch(bgDispatcher) {

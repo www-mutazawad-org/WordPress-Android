@@ -22,13 +22,14 @@ import javax.inject.Inject
 
 class BatchModerateCommentsUseCase @Inject constructor(
     moderateCommentsResourceProvider: ModerateCommentsResourceProvider
-) : FlowFSMUseCase<ModerateCommentsResourceProvider, ModerateCommentsParameters, ModerateCommentsAction, DoNotCare, CommentsUseCaseType, CommentError>(
+) : FlowFSMUseCase<ModerateCommentsResourceProvider, ModerateCommentsParameters, ModerateCommentsAction, DoNotCare, CommentsUseCaseType, CommentError, String>(
         resourceProvider = moderateCommentsResourceProvider,
+        defaultStateKey = "BatchModerateCommentsUseCase",
         initialState = Idle
 ) {
-    override suspend fun runInitLogic(parameters: ModerateCommentsParameters) {
-        manageAction(OnModerateComments(parameters))
-    }
+    //override suspend fun runInitLogic(parameters: ModerateCommentsParameters) {
+    //    //manageAction(OnModerateComments(parameters))
+    //}
 
     sealed class ModerateCommentsState
         : StateInterface<ModerateCommentsResourceProvider, ModerateCommentsAction, DoNotCare, CommentsUseCaseType, CommentError> {

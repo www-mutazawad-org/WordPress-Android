@@ -29,12 +29,12 @@ class UnifiedCommentsListHandler @Inject constructor(
             OnModerateComments(parameters)
     )
 
-    suspend fun moderateWithUndoSupport(action: ModerateCommentsAction) = moderationWithUndoUseCase.manageAction(
-            action
+    suspend fun moderateWithUndoSupport(action: ModerateCommentsAction, key: Pair<Long, Long>) = moderationWithUndoUseCase.manageAction(
+            action, key
     )
 
-    suspend fun undoCommentModeration(parameters: ModerateCommentParameters) = moderationWithUndoUseCase.manageAction(
-            OnUndoModerateComment(parameters)
+    suspend fun undoCommentModeration(parameters: ModerateCommentParameters, key: Pair<Long, Long>) = moderationWithUndoUseCase.manageAction(
+            OnUndoModerateComment(parameters), key
     )
 
     suspend fun refreshFromCache(parameters: ReloadFromCacheParameters) = paginateCommentsUseCase.manageAction(

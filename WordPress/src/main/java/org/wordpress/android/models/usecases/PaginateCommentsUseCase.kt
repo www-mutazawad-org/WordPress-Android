@@ -22,13 +22,14 @@ import javax.inject.Inject
 
 class PaginateCommentsUseCase @Inject constructor(
     paginateCommentsResourceProvider: PaginateCommentsResourceProvider
-) : FlowFSMUseCase<PaginateCommentsResourceProvider, GetPageParameters, PaginateCommentsAction, PagingData, CommentsUseCaseType, CommentError>(
+) : FlowFSMUseCase<PaginateCommentsResourceProvider, GetPageParameters, PaginateCommentsAction, PagingData, CommentsUseCaseType, CommentError, String>(
         resourceProvider = paginateCommentsResourceProvider,
+        defaultStateKey = "PAGINATION_KEY",
         initialState = Idle
 ) {
-    override suspend fun runInitLogic(parameters: GetPageParameters) {
-        manageAction(OnGetPage(parameters))
-    }
+    //override suspend fun runInitLogic(parameters: GetPageParameters) {
+    //    //manageAction(OnGetPage(parameters))
+    //}
 
     sealed class PaginateCommentsState
         : StateInterface<PaginateCommentsResourceProvider, PaginateCommentsAction, PagingData, CommentsUseCaseType, CommentError> {
