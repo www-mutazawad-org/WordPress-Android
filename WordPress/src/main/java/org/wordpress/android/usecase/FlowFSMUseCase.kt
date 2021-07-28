@@ -24,7 +24,7 @@ abstract class FlowFSMUseCase<RESOURCE_PROVIDER, INIT_LOGIC_PARAMETERS, ACTION_T
 
     interface StateInterface<RESOURCE_PROVIDER, TRANSITION_ACTION, RESULT, USE_CASE_TYPE, ERROR> {
         suspend fun runAction(
-            utilsProvider: RESOURCE_PROVIDER,
+            resourceProvider: RESOURCE_PROVIDER,
             action: TRANSITION_ACTION,
             flowChannel: MutableSharedFlow<UseCaseResult<USE_CASE_TYPE, ERROR, RESULT>>
         ): StateInterface<RESOURCE_PROVIDER, TRANSITION_ACTION, RESULT, USE_CASE_TYPE, ERROR>

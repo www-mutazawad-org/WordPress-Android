@@ -26,6 +26,9 @@ import org.wordpress.android.models.usecases.CommentsUseCaseType.BATCH_MODERATE_
 import org.wordpress.android.models.usecases.CommentsUseCaseType.MODERATE_USE_CASE
 import org.wordpress.android.models.usecases.CommentsUseCaseType.PAGINATE_USE_CASE
 import org.wordpress.android.models.usecases.LocalCommentCacheUpdateHandler
+import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction.OnDeleteComment
+import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction.OnModerateComment
+import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction.OnPushComment
 import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.Parameters.ModerateCommentParameters
 import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.SingleCommentModerationResult
 import org.wordpress.android.models.usecases.PaginateCommentsUseCase.Parameters.GetPageParameters
@@ -206,12 +209,17 @@ class UnifiedCommentListViewModel @Inject constructor(
                                     onDismissAction = {
                                         launch(bgDispatcher) {
                                             if (commentInModeration > 0 && commentInModeration == it.data.remoteCommentId) {
+                                                val parameters = ModerateCommentParameters(
+                                                        selectedSiteRepository.getSelectedSite()!!,
+                                                        it.data.remoteCommentId,
+                                                        it.data.newStatus
+                                                )
                                                 unifiedCommentsListHandler.moderateWithUndoSupport(
-                                                        ModerateCommentParameters(
-                                                                selectedSiteRepository.getSelectedSite()!!,
-                                                                it.data.remoteCommentId,
-                                                                it.data.newStatus
-                                                        )
+                                                    if (parameters.newStatus == DELETED) {
+                                                        OnDeleteComment(parameters)
+                                                    } else {
+                                                        OnPushComment(parameters)
+                                                    }
                                                 )
                                             }
                                         }
@@ -266,12 +274,13 @@ class UnifiedCommentListViewModel @Inject constructor(
     fun performSingleCommentModeration(commentId: Long, newStatus: CommentStatus) {
         launch(bgDispatcher) {
             if (newStatus == CommentStatus.SPAM || newStatus == TRASH || newStatus == DELETED) {
+                val parameters = ModerateCommentParameters(
+                        selectedSiteRepository.getSelectedSite()!!,
+                        commentId,
+                        newStatus
+                )
                 unifiedCommentsListHandler.moderateWithUndoSupport(
-                        ModerateCommentParameters(
-                                selectedSiteRepository.getSelectedSite()!!,
-                                commentId,
-                                newStatus
-                        )
+                        OnModerateComment(parameters)
                 )
             } else {
                 launch(bgDispatcher) {

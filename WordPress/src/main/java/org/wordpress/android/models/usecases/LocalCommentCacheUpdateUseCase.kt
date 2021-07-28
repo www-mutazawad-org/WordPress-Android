@@ -23,7 +23,7 @@ class LocalCommentCacheUpdateUseCase @Inject constructor() : FlowFSMUseCase<Any,
     sealed class CommentsUpdateState : StateInterface<Any, PropagateCommentsUpdateAction, Any, CommentsUseCaseType, CommentError> {
         object Idle : CommentsUpdateState() {
             override suspend fun runAction(
-                utilsProvider: Any,
+                resourceProvider: Any,
                 action: PropagateCommentsUpdateAction,
                 flowChannel: MutableSharedFlow<UseCaseResult<CommentsUseCaseType, CommentError, Any>>
             ): StateInterface<Any, PropagateCommentsUpdateAction, Any, CommentsUseCaseType, CommentError> {

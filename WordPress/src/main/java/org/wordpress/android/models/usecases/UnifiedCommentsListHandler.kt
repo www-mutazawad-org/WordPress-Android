@@ -3,7 +3,7 @@ package org.wordpress.android.models.usecases
 import kotlinx.coroutines.flow.merge
 import org.wordpress.android.models.usecases.BatchModerateCommentsUseCase.ModerateCommentsAction.OnModerateComments
 import org.wordpress.android.models.usecases.BatchModerateCommentsUseCase.Parameters.ModerateCommentsParameters
-import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction.OnModerateComment
+import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction
 import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction.OnUndoModerateComment
 import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.Parameters.ModerateCommentParameters
 import org.wordpress.android.models.usecases.PaginateCommentsUseCase.PaginateCommentsAction.OnGetPage
@@ -13,7 +13,6 @@ import org.wordpress.android.models.usecases.PaginateCommentsUseCase.Parameters.
 import javax.inject.Inject
 
 class UnifiedCommentsListHandler @Inject constructor(
-        // @Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher,
     private val paginateCommentsUseCase: PaginateCommentsUseCase,
     val batchModerationUseCase: BatchModerateCommentsUseCase,
     val moderationWithUndoUseCase: ModerateCommentWithUndoUseCase
@@ -30,8 +29,8 @@ class UnifiedCommentsListHandler @Inject constructor(
             OnModerateComments(parameters)
     )
 
-    suspend fun moderateWithUndoSupport(parameters: ModerateCommentParameters) = moderationWithUndoUseCase.manageAction(
-            OnModerateComment(parameters)
+    suspend fun moderateWithUndoSupport(action: ModerateCommentsAction) = moderationWithUndoUseCase.manageAction(
+            action
     )
 
     suspend fun undoCommentModeration(parameters: ModerateCommentParameters) = moderationWithUndoUseCase.manageAction(
