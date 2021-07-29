@@ -3,9 +3,11 @@ package org.wordpress.android.models.usecases
 import kotlinx.coroutines.flow.merge
 import org.wordpress.android.models.usecases.BatchModerateCommentsUseCase.ModerateCommentsAction.OnModerateComments
 import org.wordpress.android.models.usecases.BatchModerateCommentsUseCase.Parameters.ModerateCommentsParameters
-import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction
+import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction.OnModerateComment
+import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction.OnPushComment
 import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.ModerateCommentsAction.OnUndoModerateComment
 import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.Parameters.ModerateCommentParameters
+import org.wordpress.android.models.usecases.ModerateCommentWithUndoUseCase.Parameters.ModerateWithFallbackParameters
 import org.wordpress.android.models.usecases.PaginateCommentsUseCase.PaginateCommentsAction.OnGetPage
 import org.wordpress.android.models.usecases.PaginateCommentsUseCase.PaginateCommentsAction.OnReloadFromCache
 import org.wordpress.android.models.usecases.PaginateCommentsUseCase.Parameters.GetPageParameters
@@ -13,6 +15,7 @@ import org.wordpress.android.models.usecases.PaginateCommentsUseCase.Parameters.
 import javax.inject.Inject
 
 class UnifiedCommentsListHandler @Inject constructor(
+        // @Named(BG_THREAD) private val bgDispatcher: CoroutineDispatcher,
     private val paginateCommentsUseCase: PaginateCommentsUseCase,
     val batchModerationUseCase: BatchModerateCommentsUseCase,
     val moderationWithUndoUseCase: ModerateCommentWithUndoUseCase
@@ -29,13 +32,18 @@ class UnifiedCommentsListHandler @Inject constructor(
             OnModerateComments(parameters)
     )
 
-    suspend fun moderateWithUndoSupport(action: ModerateCommentsAction) = moderationWithUndoUseCase.manageAction(
-            action
+    suspend fun preModerateWithUndo(parameters: ModerateCommentParameters) = moderationWithUndoUseCase.manageAction(
+            OnModerateComment(parameters)
     )
 
-    suspend fun undoCommentModeration(parameters: ModerateCommentParameters) = moderationWithUndoUseCase.manageAction(
-            OnUndoModerateComment(parameters)
+    suspend fun moderateAfterUndo(parameters: ModerateWithFallbackParameters) = moderationWithUndoUseCase.manageAction(
+            OnPushComment(parameters)
     )
+
+    suspend fun undoCommentModeration(parameters: ModerateWithFallbackParameters) =
+            moderationWithUndoUseCase.manageAction(
+                    OnUndoModerateComment(parameters)
+            )
 
     suspend fun refreshFromCache(parameters: ReloadFromCacheParameters) = paginateCommentsUseCase.manageAction(
             OnReloadFromCache(parameters)
