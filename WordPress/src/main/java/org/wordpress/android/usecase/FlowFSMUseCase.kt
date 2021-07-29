@@ -5,6 +5,8 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.wordpress.android.util.AppLog
+import org.wordpress.android.util.AppLog.T
 import java.util.concurrent.ConcurrentHashMap
 
 abstract class FlowFSMUseCase<RESOURCE_PROVIDER, INIT_LOGIC_PARAMETERS, ACTION_TYPE, DATA, USE_CASE_TYPE, ERROR, STATE_KEY_TYPE> (
@@ -26,9 +28,11 @@ abstract class FlowFSMUseCase<RESOURCE_PROVIDER, INIT_LOGIC_PARAMETERS, ACTION_T
 
     suspend fun manageAction(action: ACTION_TYPE, key: STATE_KEY_TYPE = defaultStateKey) {
         _mutex.withLock {
+            AppLog.d(T.COMMENTS, "manageAction -> START $action $key")
             val oldState = getState(key)
             val newState = oldState.runAction(resourceProvider, action, _flowChannel)
             updateState(key, oldState, newState)
+            AppLog.d(T.COMMENTS, "manageAction -> STOP  $action $key - ${oldState::class.java.simpleName} -> ${newState::class.java.simpleName}")
 
         }
     }
@@ -44,7 +48,6 @@ abstract class FlowFSMUseCase<RESOURCE_PROVIDER, INIT_LOGIC_PARAMETERS, ACTION_T
     private fun getState(key: STATE_KEY_TYPE): StateInterface<RESOURCE_PROVIDER, ACTION_TYPE, DATA, USE_CASE_TYPE, ERROR> {
         return _internalState.putIfAbsent(key, initialState) ?: initialState
     }
-
 
     private fun updateState(
         key: STATE_KEY_TYPE,
