@@ -495,17 +495,7 @@ public class GutenbergEditorFragment extends EditorFragmentAbstract implements
                         mEditorFragmentListener.showPreview();
                     }
                 },
-                new OnBlockTypeImpressionsEventListener() {
-                    @Override
-                    public Map<String, Double> onRequestBlockTypeImpressions() {
-                        return mEditorFragmentListener.onRequestBlockTypeImpressions();
-                    }
-
-                    @Override
-                    public void onSetBlockTypeImpressions(Map<String, Double> impressions) {
-                        mEditorFragmentListener.onSetBlockTypeImpressions(impressions);
-                    }
-                },
+                mEditorFragmentListener,
                 GutenbergUtils.isDarkMode(getActivity()));
 
         // request dependency injection. Do this after setting min/max dimensions

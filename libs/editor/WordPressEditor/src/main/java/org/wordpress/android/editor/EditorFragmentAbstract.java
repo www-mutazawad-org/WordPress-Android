@@ -16,6 +16,7 @@ import com.android.volley.toolbox.ImageLoader;
 import org.wordpress.android.editor.gutenberg.DialogVisibilityProvider;
 import org.wordpress.android.util.helpers.MediaFile;
 import org.wordpress.android.util.helpers.MediaGallery;
+import org.wordpress.mobile.WPAndroidGlue.WPAndroidGlueCode.OnBlockTypeImpressionsEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -176,7 +177,7 @@ public abstract class EditorFragmentAbstract extends Fragment {
     /**
      * Callbacks used to communicate with the parent Activity
      */
-    public interface EditorFragmentListener extends DialogVisibilityProvider {
+    public interface EditorFragmentListener extends DialogVisibilityProvider, OnBlockTypeImpressionsEventListener {
         void onEditorFragmentInitialized();
         void onEditorFragmentContentReady(ArrayList<Object> unsupportedBlocks, boolean replaceBlockActionWaiting);
         void updateFeaturedImage(long mediaId, boolean imagePicked);
@@ -219,8 +220,6 @@ public abstract class EditorFragmentAbstract extends Fragment {
         void onReplaceStoryEditedBlockActionSent();
         void onReplaceStoryEditedBlockActionReceived();
         boolean showPreview();
-        Map<String, Double> onRequestBlockTypeImpressions();
-        void onSetBlockTypeImpressions(Map<String, Double> impressions);
     }
 
     /**
