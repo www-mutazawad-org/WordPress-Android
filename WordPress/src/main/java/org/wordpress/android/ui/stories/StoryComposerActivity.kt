@@ -304,13 +304,20 @@ class StoryComposerActivity : ComposeLoopFrameActivity(),
                 }
                 RequestCodes.PHOTO_PICKER, RequestCodes.STORIES_PHOTO_PICKER -> {
                     if (it.hasExtra(MediaPickerConstants.EXTRA_MEDIA_URIS)) {
-                        val uriList: List<Uri> = convertStringArrayIntoUrisList(
-                                it.getStringArrayExtra(MediaPickerConstants.EXTRA_MEDIA_URIS)
-                        )
-                        storyEditorMedia.onPhotoPickerMediaChosen(uriList)
+                        it.getStringArrayExtra(MediaPickerConstants.EXTRA_MEDIA_URIS)?.let {
+                            val uriList: List<Uri> = convertStringArrayIntoUrisList(
+                                    it
+                            )
+                            storyEditorMedia.onPhotoPickerMediaChosen(uriList)
+                        }
                     } else if (it.hasExtra(MediaBrowserActivity.RESULT_IDS)) {
                         handleMediaPickerIntentData(it)
+                    } else {
+                        // no op
                     }
+                }
+                else -> {
+                    // no op
                 }
             }
         }
@@ -370,11 +377,13 @@ class StoryComposerActivity : ComposeLoopFrameActivity(),
         }
 
         if (data.hasExtra(MediaPickerConstants.EXTRA_MEDIA_URIS)) {
-            val uriList: List<Uri> = convertStringArrayIntoUrisList(
-                    data.getStringArrayExtra(MediaPickerConstants.EXTRA_MEDIA_URIS)
-            )
-            if (uriList.isNotEmpty()) {
-                storyEditorMedia.onPhotoPickerMediaChosen(uriList)
+            data.getStringArrayExtra(MediaPickerConstants.EXTRA_MEDIA_URIS)?.let {
+                val uriList: List<Uri> = convertStringArrayIntoUrisList(
+                        it
+                )
+                if (uriList.isNotEmpty()) {
+                    storyEditorMedia.onPhotoPickerMediaChosen(uriList)
+                }
             }
         } else if (data.hasExtra(MediaBrowserActivity.RESULT_IDS)) {
             val ids = ListUtils.fromLongArray(

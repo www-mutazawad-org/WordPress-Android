@@ -79,6 +79,7 @@ android {
 
     compileSdkVersion rootProject.compileSdkVersion
 
+    println "HELLO WE ARE IN THE WORDPRESS PROJECT, rootProject.targetSdkVersion es: " + rootProject.targetSdkVersion
     defaultConfig {
         applicationId "org.wordpress.android"
         archivesBaseName = "$applicationId"
