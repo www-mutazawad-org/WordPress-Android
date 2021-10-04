@@ -61,10 +61,10 @@ if (localBuilds.exists()) {
 
     if (ext.has("localGutenbergMobilePath")) {
         gradle.ext.includedBuildGutenbergMobilePath = ext.localGutenbergMobilePath
-        includeBuild("$ext.localGutenbergMobilePath/gutenberg/packages/react-native-bridge/android") {
+        includeBuild("$ext.localGutenbergMobilePath/src/react-native-bridge-wpcom/android") {
             dependencySubstitution {
                 println "Substituting gutenberg-mobile with the local build"
-                substitute module("$gradle.ext.gutenbergMobileBinaryPath") with project(':react-native-bridge')
+                substitute module("$gradle.ext.gutenbergMobileBinaryPath") with project(':react-native-bridge-wpcom')
             }
         }
     }
