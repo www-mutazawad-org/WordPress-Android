@@ -57,6 +57,8 @@ class StorePostViewModel
     private val _onFinish = MutableLiveData<Event<ActivityFinishState>>()
     val onFinish: LiveData<Event<ActivityFinishState>> = _onFinish
 
+    var isSavingOnExit = false
+
     private val _savingProgressDialogVisibility = MutableLiveData<DialogVisibility>().apply {
         postValue(Hidden)
     }
@@ -100,7 +102,7 @@ class StorePostViewModel
                 delay(CHANGE_SAVE_DELAY)
             }
             debounceCounter = 0
-            _onSavePostTriggered.value = Event(Unit)
+            if (!isSavingOnExit) _onSavePostTriggered.value = Event(Unit)
         }
     }
 
