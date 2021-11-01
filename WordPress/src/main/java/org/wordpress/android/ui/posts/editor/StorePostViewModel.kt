@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.wordpress.android.editor.gutenberg.DialogVisibility
 import org.wordpress.android.editor.gutenberg.DialogVisibility.Hidden
@@ -91,8 +90,6 @@ class StorePostViewModel
             SAVED_LOCALLY
         }
     }
-
-    fun isAutosavePending(): Boolean = saveJob?.isActive ?: false
 
     fun savePostWithDelay() {
         saveJob?.cancel()
