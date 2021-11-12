@@ -2428,7 +2428,7 @@ public class EditPostActivity extends LocaleAwareActivity implements
         final String title = intent.getStringExtra(Intent.EXTRA_SUBJECT);
         if (text != null) {
             mHasSetPostContent = true;
-            mEditPostRepository.updateAsync(postModel -> {
+            mEditPostRepository.addUpdateAsyncToQueue(postModel -> {
                 if (title != null) {
                     postModel.setTitle(title);
                 }

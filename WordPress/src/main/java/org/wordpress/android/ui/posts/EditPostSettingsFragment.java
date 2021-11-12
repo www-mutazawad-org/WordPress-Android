@@ -805,7 +805,7 @@ public class EditPostSettingsFragment extends Fragment {
     private void updatePostFormat(String postFormat) {
         EditPostRepository editPostRepository = getEditPostRepository();
         if (editPostRepository != null) {
-            editPostRepository.updateAsync(postModel -> {
+            editPostRepository.addUpdateAsyncToQueue(postModel -> {
                 postModel.setPostFormat(postFormat);
                 return true;
             }, (postModel, result) -> {

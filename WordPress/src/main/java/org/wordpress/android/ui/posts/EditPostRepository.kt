@@ -6,6 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.MediaModel
@@ -19,6 +22,7 @@ import org.wordpress.android.fluxc.model.post.PostStatus.fromPost
 import org.wordpress.android.fluxc.store.PostStore
 import org.wordpress.android.modules.BG_THREAD
 import org.wordpress.android.modules.UI_THREAD
+import org.wordpress.android.ui.posts.EditPostRepository.EditPostActorMessageType.UpdateAsyncMessage
 import org.wordpress.android.ui.posts.EditPostRepository.UpdatePostResult.NoChanges
 import org.wordpress.android.ui.posts.EditPostRepository.UpdatePostResult.Updated
 import org.wordpress.android.ui.uploads.UploadService
@@ -228,8 +232,31 @@ class EditPostRepository
         reportTransactionState(false)
     }
 
+    @ObsoleteCoroutinesApi fun CoroutineScope.editPostRepositoryActor() = actor<EditPostActorMessageType> {
+        AppLog.w(T.EDITOR, "editPostRepositoryActor is processing the message")
+        channel.consumeEach { message ->
+            when (message) {
+                is UpdateAsyncMessage -> updateAsync(message.action, message.onCompleted)
+            }
+        }
+    }
+
+    fun addUpdateAsyncToQueue(
+        action: (PostModel) -> Boolean,
+        onCompleted: ((PostImmutableModel, UpdatePostResult) -> Unit)? = null
+    ) {
+        launch {
+            editPostRepositoryActor().send(UpdateAsyncMessage(action, onCompleted))
+        }
+    }
+
     sealed class UpdatePostResult {
-        object Updated : UpdatePostResult()
+        object Updated: UpdatePostResult()
         object NoChanges : UpdatePostResult()
+    }
+
+    sealed class EditPostActorMessageType {
+        data class UpdateAsyncMessage( val action: (PostModel) -> Boolean,
+            val onCompleted: ((PostImmutableModel, UpdatePostResult) -> Unit)? = null) : EditPostActorMessageType()
     }
 }
