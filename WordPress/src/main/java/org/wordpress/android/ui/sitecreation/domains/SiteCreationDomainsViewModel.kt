@@ -138,9 +138,11 @@ class SiteCreationDomainsViewModel @Inject constructor(
             updateUiStateToContent(query, Loading(Ready(emptyList()), false))
             fetchDomainsJob = launch {
                 delay(THROTTLE_DELAY)
-                val onSuggestedDomains: OnSuggestedDomains = fetchDomainsUseCase.fetchDomains(query.value,
-                            includeVendorDot = true,
-                            includeDotBlog = true)
+                val onSuggestedDomains: OnSuggestedDomains = fetchDomainsUseCase.fetchDomains(
+                        query.value,
+                        includeVendorDot = true,
+                        includeDotBlog = true
+                )
 
                 withContext(mainDispatcher) {
                     onDomainsFetched(query, onSuggestedDomains)
@@ -156,20 +158,32 @@ class SiteCreationDomainsViewModel @Inject constructor(
     }
 
     private fun onDomainsFetched(query: DomainSuggestionsQuery, event: OnSuggestedDomains) {
-        // We want to treat `INVALID_QUERY` as if it's an empty result, so we'll ignore it
-        if (event.isError && event.error.type != SuggestDomainErrorType.INVALID_QUERY) {
+        if (event.isError) {
             tracker.trackErrorShown(
                     ERROR_CONTEXT,
                     event.error.type?.toString() ?: SiteCreationErrorType.UNKNOWN.toString(),
                     event.error.message
             )
-            updateUiStateToContent(
-                    query,
-                    Error(
-                            listState,
-                            errorMessageResId = R.string.site_creation_fetch_suggestions_error_unknown
-                    )
-            )
+
+            /**
+             * We want to treat `INVALID_QUERY` as if it's an empty result and
+             * inform the user that the search query contains non-alphanumeric characters
+             */
+            if (event.error.type == SuggestDomainErrorType.INVALID_QUERY) {
+                updateUiStateToContent(
+                        query,
+                        Success(emptyList()),
+                        UiStringRes(R.string.new_site_creation_empty_domain_list_message_invalid_query)
+                )
+            } else {
+                updateUiStateToContent(
+                        query,
+                        Error(
+                                listState,
+                                errorMessageResId = R.string.site_creation_fetch_suggestions_error_unknown
+                        )
+                )
+            }
         } else {
             /**
              * We would like to show the domains that matches the current query at the top. For this, we split the
@@ -180,14 +194,10 @@ class SiteCreationDomainsViewModel @Inject constructor(
                     .partition { it.startsWith("${query.value}.") }
                     .toList().flatten()
 
-            // We inform the user when the search query contains non-alphanumeric characters
-            val emptyListMessage = if (event.isError && event.error.type == SuggestDomainErrorType.INVALID_QUERY) {
-                UiStringRes(R.string.new_site_creation_empty_domain_list_message_invalid_query)
-            } else {
-                UiStringRes(R.string.new_site_creation_empty_domain_list_message)
-            }
-
-            updateUiStateToContent(query, Success(domainNames), emptyListMessage)
+            updateUiStateToContent(
+                    query,
+                    Success(domainNames)
+            )
         }
     }
 
