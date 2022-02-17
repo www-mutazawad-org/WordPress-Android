@@ -138,11 +138,9 @@ class SiteCreationDomainsViewModel @Inject constructor(
             updateUiStateToContent(query, Loading(Ready(emptyList()), false))
             fetchDomainsJob = launch {
                 delay(THROTTLE_DELAY)
-                val onSuggestedDomains: OnSuggestedDomains = fetchDomainsUseCase.fetchDomains(
-                        query.value,
-                        includeVendorDot = true,
-                        includeDotBlog = true
-                )
+                val onSuggestedDomains: OnSuggestedDomains = fetchDomainsUseCase.fetchDomains(query.value,
+                            includeVendorDot = true,
+                            includeDotBlog = true)
 
                 withContext(mainDispatcher) {
                     onDomainsFetched(query, onSuggestedDomains)
