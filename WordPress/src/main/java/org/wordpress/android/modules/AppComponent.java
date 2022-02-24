@@ -88,8 +88,6 @@ import org.wordpress.android.ui.mediapicker.MediaPickerActivity;
 import org.wordpress.android.ui.mediapicker.MediaPickerFragment;
 import org.wordpress.android.ui.mlp.ModalLayoutPickerFragment;
 import org.wordpress.android.ui.mysite.MySiteFragment;
-import org.wordpress.android.ui.mysite.MySiteNonTabbedFragment;
-import org.wordpress.android.ui.mysite.MySiteTabbedFragment;
 import org.wordpress.android.ui.mysite.dynamiccards.DynamicCardMenuFragment;
 import org.wordpress.android.ui.mysite.tabs.MySiteDashboardTabFragment;
 import org.wordpress.android.ui.mysite.tabs.MySiteMenuTabFragment;
@@ -659,10 +657,6 @@ public interface AppComponent extends AndroidInjector<WordPress> {
     void inject(ActivityLogTypeFilterFragment object);
 
     void inject(MySiteFragment object);
-
-    void inject(MySiteNonTabbedFragment object);
-
-    void inject(MySiteTabbedFragment object);
 
     void inject(MySiteDashboardTabFragment object);
 

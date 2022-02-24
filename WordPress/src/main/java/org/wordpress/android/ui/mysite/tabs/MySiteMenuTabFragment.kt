@@ -485,6 +485,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
                 R.drawable.img_illustration_site_about_280dp,
                 getString(negativeButtonLabel)
         )
+        // todo: annmarie what is the parent here? Is it MySiteFragment? or the Activity?
         quickStartPromptDialogFragment.show(parentFragmentManager, tag)
         AnalyticsTracker.track(AnalyticsTracker.Stat.QUICK_START_REQUEST_VIEWED)
     }

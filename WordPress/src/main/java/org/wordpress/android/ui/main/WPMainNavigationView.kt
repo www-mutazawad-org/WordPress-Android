@@ -26,13 +26,13 @@ import org.wordpress.android.ui.main.WPMainActivity.OnScrollToTopListener
 import org.wordpress.android.ui.main.WPMainNavigationView.PageType.MY_SITE
 import org.wordpress.android.ui.main.WPMainNavigationView.PageType.NOTIFS
 import org.wordpress.android.ui.main.WPMainNavigationView.PageType.READER
-import org.wordpress.android.ui.mysite.MySiteTabbedFragment
 import org.wordpress.android.ui.notifications.NotificationsListFragment
 import org.wordpress.android.ui.prefs.AppPrefs
 import org.wordpress.android.ui.reader.ReaderFragment
 import org.wordpress.android.util.AniUtils
 import org.wordpress.android.util.AniUtils.Duration
 import org.wordpress.android.util.getColorStateListFromAttribute
+import org.wordpress.android.ui.mysite.MySiteFragment
 
 /*
  * Bottom navigation view and related adapter used by the main activity for the
@@ -291,13 +291,7 @@ class WPMainNavigationView @JvmOverloads constructor(
     private inner class NavAdapter(val showTabbedMySite: Boolean) {
         private fun createFragment(pageType: PageType): Fragment {
             val fragment = when (pageType) {
-                MY_SITE -> {
-//                    if (showTabbedMySite && BuildConfig.ENABLE_MY_SITE_DASHBOARD_TABS) {
-                        MySiteTabbedFragment.newInstance()
-//                    } else {
-//                        MySiteNonTabbedFragment.newInstance()
-//                    }
-                }
+                MY_SITE -> MySiteFragment.newInstance()
                 READER -> ReaderFragment()
                 NOTIFS -> NotificationsListFragment.newInstance()
             }

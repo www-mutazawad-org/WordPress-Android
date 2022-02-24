@@ -1566,6 +1566,7 @@ public class WPMainActivity extends LocaleAwareActivity implements
 
     @Override
     public void onPositiveClicked(@NonNull String instanceTag) {
+        // todo: annmarie
         MySiteFragment mySiteFragment = getMySiteFragment();
         if (mySiteFragment != null) {
             mySiteFragment.handleAction(new QuickStartPromptOnPositiveClick(instanceTag));
@@ -1574,6 +1575,7 @@ public class WPMainActivity extends LocaleAwareActivity implements
 
     @Override
     public void onNegativeClicked(@NonNull String instanceTag) {
+        // todo: annmarie
         MySiteFragment mySiteFragment = getMySiteFragment();
         if (mySiteFragment != null) {
             mySiteFragment.handleAction(new QuickStartPromptOnNegativeClick(instanceTag));
