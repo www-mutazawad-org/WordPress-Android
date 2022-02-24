@@ -12,7 +12,7 @@ import org.wordpress.android.R.dimen
 import org.wordpress.android.WordPress
 import org.wordpress.android.databinding.MySiteDashboardTabFragmentBinding
 import org.wordpress.android.ui.mysite.MySiteCardAndItem
-import org.wordpress.android.ui.mysite.MySiteCardAndItem.Card.DashboardCards.DashboardCard
+import org.wordpress.android.ui.mysite.MySiteCardAndItem.Card.DashboardCards
 import org.wordpress.android.ui.mysite.MySiteViewModel
 import org.wordpress.android.ui.mysite.MySiteViewModel.State
 import org.wordpress.android.ui.mysite.cards.dashboard.CardsAdapter
@@ -92,7 +92,9 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
         mySiteViewModel.setActionableEmptyViewGone(actionableEmptyView.isVisible) {
             actionableEmptyView.setVisible(false)
         }
-        (recyclerView.adapter as? CardsAdapter)?.update(cardAndItems.filterIsInstance(DashboardCard::class.java))
+
+        (recyclerView.adapter as? CardsAdapter)?.update(
+                cardAndItems.filterIsInstance<DashboardCards>().first().cards)
     }
 
     private fun MySiteDashboardTabFragmentBinding.loadEmptyView(shouldShowEmptyViewImage: Boolean) {
@@ -107,6 +109,11 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mySiteViewModel.onResume()
     }
 
     companion object {
