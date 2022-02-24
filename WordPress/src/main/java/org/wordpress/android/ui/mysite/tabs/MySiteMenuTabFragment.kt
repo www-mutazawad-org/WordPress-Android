@@ -62,16 +62,13 @@ import org.wordpress.android.ui.utils.UiString.UiStringText
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import org.wordpress.android.util.AppLog.T.UTILS
-import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.QuickStartUtilsWrapper
 import org.wordpress.android.util.SnackbarItem
 import org.wordpress.android.util.SnackbarItem.Action
 import org.wordpress.android.util.SnackbarItem.Info
 import org.wordpress.android.util.SnackbarSequencer
 import org.wordpress.android.util.UriWrapper
-import org.wordpress.android.util.WPSwipeToRefreshHelper
 import org.wordpress.android.util.getColorFromAttribute
-import org.wordpress.android.util.helpers.SwipeToRefreshHelper
 import org.wordpress.android.util.image.ImageManager
 import org.wordpress.android.util.setVisible
 import org.wordpress.android.viewmodel.observeEvent
@@ -93,7 +90,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     private lateinit var mySiteViewModel: MySiteViewModel
     private lateinit var dialogViewModel: BasicDialogViewModel
     private lateinit var dynamicCardMenuViewModel: DynamicCardMenuViewModel
-    private lateinit var swipeToRefreshHelper: SwipeToRefreshHelper
     private lateinit var viewModel: MySiteTabViewModel
     private var binding: MySiteMenuTabFragmentBinding? = null
 
@@ -109,7 +105,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
         binding = MySiteMenuTabFragmentBinding.bind(view).apply {
             setupContentViews(savedInstanceState)
             setupObservers()
-            swipeToRefreshHelper.isRefreshing = true
+           // todo: note: swipeToRefreshHelper.isRefreshing = true
         }
     }
 
@@ -150,20 +146,12 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
         }
 
         recyclerView.adapter = adapter
-
-        swipeToRefreshHelper = WPSwipeToRefreshHelper.buildSwipeToRefreshHelper(swipeRefreshLayout) {
-            if (NetworkUtils.checkConnection(requireActivity())) {
-                mySiteViewModel.refresh(isPullToRefresh = true)
-            } else {
-                swipeToRefreshHelper.isRefreshing = false
-            }
-        }
     }
 
     @Suppress("LongMethod")
     private fun MySiteMenuTabFragmentBinding.setupObservers() {
         mySiteViewModel.uiModel.observe(viewLifecycleOwner, { uiModel ->
-            hideRefreshIndicatorIfNeeded()
+          // todo:  hideRefreshIndicatorIfNeeded()
             when (val state = uiModel.state) {
                 is State.SiteSelected -> loadData(state.cardAndItems)
                 is State.NoSites -> loadEmptyView(state.shouldShowImage)
@@ -219,7 +207,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
             mySiteViewModel.onQuickStartMenuInteraction(interaction)
         })
         mySiteViewModel.onUploadedItem.observeEvent(viewLifecycleOwner, { handleUploadedItem(it) })
-        mySiteViewModel.onShowSwipeRefreshLayout.observeEvent(viewLifecycleOwner, { showSwipeToRefreshLayout(it) })
+        // todo: mySiteViewModel.onShowSwipeRefreshLayout.observeEvent(viewLifecycleOwner, { showSwipeToRefreshLayout(it) })
     }
 
     @Suppress("ComplexMethod", "LongMethod")
@@ -530,13 +518,13 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
         }
     }
 
-    private fun showSwipeToRefreshLayout(isEnabled: Boolean) {
-        swipeToRefreshHelper.setEnabled(isEnabled)
-    }
-
-    private fun hideRefreshIndicatorIfNeeded() {
-        swipeToRefreshHelper.isRefreshing = mySiteViewModel.isRefreshing()
-    }
+//    private fun showSwipeToRefreshLayout(isEnabled: Boolean) {
+//        swipeToRefreshHelper.setEnabled(isEnabled)
+//    }
+//
+//    private fun hideRefreshIndicatorIfNeeded() {
+//        swipeToRefreshHelper.isRefreshing = mySiteViewModel.isRefreshing()
+//    }
 
     override fun onSuccessfulInput(input: String, callbackId: Int) {
         mySiteViewModel.onSiteNameChosen(input)

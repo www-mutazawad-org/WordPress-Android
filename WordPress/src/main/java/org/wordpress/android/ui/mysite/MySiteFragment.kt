@@ -12,6 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.yalantis.ucrop.UCrop
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.wordpress.android.R
 import org.wordpress.android.WordPress
 import org.wordpress.android.databinding.MySiteFragmentBinding
@@ -30,6 +33,9 @@ import org.wordpress.android.util.config.MySiteDashboardTabsFeatureConfig
 import org.wordpress.android.util.image.ImageType.USER
 import org.wordpress.android.util.AppLog.T.MAIN
 import org.wordpress.android.util.AppLog.T.UTILS
+import org.wordpress.android.util.NetworkUtils
+import org.wordpress.android.util.WPSwipeToRefreshHelper
+import org.wordpress.android.util.helpers.SwipeToRefreshHelper
 
 import org.wordpress.android.viewmodel.observeEvent
 import javax.inject.Inject
@@ -42,6 +48,7 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment) {
     @Inject lateinit var meGravatarLoader: MeGravatarLoader
 
     private lateinit var viewModel: MySiteViewModel
+    private lateinit var swipeToRefreshHelper: SwipeToRefreshHelper
 
     private var binding: MySiteFragmentBinding? = null
 
@@ -58,7 +65,18 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment) {
         binding = MySiteFragmentBinding.bind(view).apply {
             setupToolbar()
             updateTabs()
+            setupContentViews()
             setupObservers()
+            swipeToRefreshHelper.isRefreshing = true
+            fakePTRDelay()
+        }
+    }
+
+    // todo: annmarie - REMOVE ME!! this is for testing the PTR concept only
+    private fun fakePTRDelay() {
+        GlobalScope.launch {
+            delay(3000)
+            swipeToRefreshHelper.isRefreshing = false
         }
     }
 
@@ -113,11 +131,26 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment) {
         })
     }
 
+    private fun MySiteFragmentBinding.setupContentViews() {
+        swipeToRefreshHelper = WPSwipeToRefreshHelper.buildSwipeToRefreshHelper(swipeRefreshLayout) {
+            if (NetworkUtils.checkConnection(requireActivity())) {
+                viewModel.refresh(isPullToRefresh = true)
+                fakePTRDelay()
+            } else {
+                swipeToRefreshHelper.isRefreshing = false
+            }
+        }
+    }
+
     private fun MySiteFragmentBinding.setupObservers() {
+        hideRefreshIndicatorIfNeeded()
+
         viewModel.uiModel.observe(viewLifecycleOwner, { uiModel ->
             loadGravatar(uiModel.accountAvatarUrl)
         })
         viewModel.onNavigation.observeEvent(viewLifecycleOwner, { handleNavigationAction(it) })
+
+        viewModel.onShowSwipeRefreshLayout.observeEvent(viewLifecycleOwner, { showSwipeToRefreshLayout(it) })
     }
 
     private fun MySiteFragmentBinding.loadGravatar(avatarUrl: String) =
@@ -234,6 +267,13 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment) {
         }
     }
 
+    private fun showSwipeToRefreshLayout(isEnabled: Boolean) {
+        swipeToRefreshHelper.setEnabled(isEnabled)
+    }
+
+    private fun hideRefreshIndicatorIfNeeded() {
+        swipeToRefreshHelper.isRefreshing = viewModel.isRefreshing()
+    }
 
     fun handleAction(action: MySiteAction) {
         // todo: iterate through all the child fragments and send the action to non-nulls who can handle it
