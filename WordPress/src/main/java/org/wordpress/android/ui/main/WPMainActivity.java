@@ -82,6 +82,8 @@ import org.wordpress.android.ui.bloggingreminders.BloggingRemindersViewModel;
 import org.wordpress.android.ui.main.WPMainNavigationView.OnPageListener;
 import org.wordpress.android.ui.main.WPMainNavigationView.PageType;
 import org.wordpress.android.ui.mlp.ModalLayoutPickerFragment;
+import org.wordpress.android.ui.mysite.MySiteAction.QuickStartPromptOnNegativeClick;
+import org.wordpress.android.ui.mysite.MySiteAction.QuickStartPromptOnPositiveClick;
 import org.wordpress.android.ui.mysite.MySiteFragment;
 import org.wordpress.android.ui.mysite.MySiteViewModel;
 import org.wordpress.android.ui.mysite.SelectedSiteRepository;
@@ -132,6 +134,7 @@ import org.wordpress.android.util.WPActivityUtils;
 import org.wordpress.android.util.analytics.AnalyticsTrackerWrapper;
 import org.wordpress.android.util.analytics.AnalyticsUtils;
 import org.wordpress.android.util.analytics.service.InstallationReferrerServiceStarter;
+import org.wordpress.android.util.config.MySiteDashboardTabsFeatureConfig;
 import org.wordpress.android.util.config.MySiteDashboardTodaysStatsCardFeatureConfig;
 import org.wordpress.android.viewmodel.main.WPMainActivityViewModel;
 import org.wordpress.android.viewmodel.main.WPMainActivityViewModel.FocusPointInfo;
@@ -227,6 +230,7 @@ public class WPMainActivity extends LocaleAwareActivity implements
     @Inject CreateSiteNotificationScheduler mCreateSiteNotificationScheduler;
     @Inject WeeklyRoundupScheduler mWeeklyRoundupScheduler;
     @Inject MySiteDashboardTodaysStatsCardFeatureConfig mTodaysStatsCardFeatureConfig;
+    @Inject MySiteDashboardTabsFeatureConfig mMySiteDashboardTabsFeatureConfig;
 
     @Inject BuildConfigWrapper mBuildConfigWrapper;
 
@@ -267,7 +271,7 @@ public class WPMainActivity extends LocaleAwareActivity implements
 
         mBottomNav = findViewById(R.id.bottom_navigation);
 
-        mBottomNav.init(getSupportFragmentManager(), this);
+        mBottomNav.init(getSupportFragmentManager(), this, mMySiteDashboardTabsFeatureConfig.isEnabled());
 
         mConnectionBar = findViewById(R.id.connection_bar);
         mConnectionBar.setOnClickListener(v -> {
@@ -1179,12 +1183,20 @@ public class WPMainActivity extends LocaleAwareActivity implements
         ReaderUpdateServiceStarter.startService(this, EnumSet.of(UpdateTask.TAGS, UpdateTask.FOLLOWED_BLOGS));
     }
 
+//    private MySiteFragment getMySiteFragment() {
+//        Fragment fragment = mBottomNav.getFragment(PageType.MY_SITE);
+//        if (fragment instanceof MySiteFragment) {
+//            return (MySiteFragment) fragment;
+//        }
+//
+//        return null;
+//    }
+
     private MySiteFragment getMySiteFragment() {
         Fragment fragment = mBottomNav.getFragment(PageType.MY_SITE);
         if (fragment instanceof MySiteFragment) {
             return (MySiteFragment) fragment;
         }
-
         return null;
     }
 
@@ -1556,7 +1568,7 @@ public class WPMainActivity extends LocaleAwareActivity implements
     public void onPositiveClicked(@NonNull String instanceTag) {
         MySiteFragment mySiteFragment = getMySiteFragment();
         if (mySiteFragment != null) {
-            mySiteFragment.onPositiveClicked(instanceTag);
+            mySiteFragment.handleAction(new QuickStartPromptOnPositiveClick(instanceTag));
         }
     }
 
@@ -1564,7 +1576,7 @@ public class WPMainActivity extends LocaleAwareActivity implements
     public void onNegativeClicked(@NonNull String instanceTag) {
         MySiteFragment mySiteFragment = getMySiteFragment();
         if (mySiteFragment != null) {
-            mySiteFragment.onNegativeClicked(instanceTag);
+            mySiteFragment.handleAction(new QuickStartPromptOnNegativeClick(instanceTag));
         }
     }
 
