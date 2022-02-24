@@ -26,7 +26,6 @@ import org.wordpress.android.ui.main.WPMainActivity.OnScrollToTopListener
 import org.wordpress.android.ui.main.WPMainNavigationView.PageType.MY_SITE
 import org.wordpress.android.ui.main.WPMainNavigationView.PageType.NOTIFS
 import org.wordpress.android.ui.main.WPMainNavigationView.PageType.READER
-import org.wordpress.android.ui.mysite.MySiteNonTabbedFragment
 import org.wordpress.android.ui.mysite.MySiteTabbedFragment
 import org.wordpress.android.ui.notifications.NotificationsListFragment
 import org.wordpress.android.ui.prefs.AppPrefs
@@ -293,11 +292,11 @@ class WPMainNavigationView @JvmOverloads constructor(
         private fun createFragment(pageType: PageType): Fragment {
             val fragment = when (pageType) {
                 MY_SITE -> {
-                    if (showTabbedMySite && BuildConfig.ENABLE_MY_SITE_DASHBOARD_TABS) {
+//                    if (showTabbedMySite && BuildConfig.ENABLE_MY_SITE_DASHBOARD_TABS) {
                         MySiteTabbedFragment.newInstance()
-                    } else {
-                        MySiteNonTabbedFragment.newInstance()
-                    }
+//                    } else {
+//                        MySiteNonTabbedFragment.newInstance()
+//                    }
                 }
                 READER -> ReaderFragment()
                 NOTIFS -> NotificationsListFragment.newInstance()

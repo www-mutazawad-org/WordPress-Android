@@ -15,19 +15,20 @@ import org.wordpress.android.databinding.MySiteTabbedFragmentBinding
 import org.wordpress.android.ui.ActivityLauncher
 import org.wordpress.android.ui.main.utils.MeGravatarLoader
 import org.wordpress.android.ui.mysite.tabs.MySiteTabsAdapter
+import org.wordpress.android.util.BuildConfigWrapper
+import org.wordpress.android.util.config.MySiteDashboardTabsFeatureConfig
 import org.wordpress.android.util.image.ImageType.USER
+
 import org.wordpress.android.viewmodel.observeEvent
 import javax.inject.Inject
-
-private val TAB_TITLES = arrayOf(
-        "Menu",
-        "Dashboard"
-)
 
 @Suppress("TooManyFunctions")
 class MySiteTabbedFragment : Fragment(R.layout.my_site_tabbed_fragment) {
     @Inject lateinit var viewModelFactory: ViewModelProvider.Factory
+    @Inject lateinit var mySiteDashboardTabsFeatureConfig: MySiteDashboardTabsFeatureConfig
+    @Inject lateinit var buildConfigWrapper: BuildConfigWrapper
     @Inject lateinit var meGravatarLoader: MeGravatarLoader
+
     private lateinit var viewModel: MySiteViewModel
 
     private var binding: MySiteTabbedFragmentBinding? = null
@@ -50,13 +51,24 @@ class MySiteTabbedFragment : Fragment(R.layout.my_site_tabbed_fragment) {
     }
 
     private fun MySiteTabbedFragmentBinding.updateTabs() {
-        val adapter = MySiteTabsAdapter(this@MySiteTabbedFragment, TAB_TITLES)
+        val tabTitles = if (shouldShowTabs()) {
+            arrayOf("Menu", "Dashboard")
+        } else {
+            arrayOf("Menu")
+        }
+
+        val adapter = MySiteTabsAdapter(this@MySiteTabbedFragment, tabTitles)
         viewPager.adapter = adapter
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = TAB_TITLES[position]
+            tab.text = tabTitles[position]
         }.attach()
+
+        tabLayout.visibility = if (tabTitles.size > 1) View.VISIBLE else View.GONE
     }
+
+    private fun shouldShowTabs() =
+            mySiteDashboardTabsFeatureConfig.isEnabled() && buildConfigWrapper.isMySiteTabsEnabled
 
     private fun MySiteTabbedFragmentBinding.setupToolbar() {
         toolbarMain.let { toolbar ->

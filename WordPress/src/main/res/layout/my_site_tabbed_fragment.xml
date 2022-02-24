@@ -7,7 +7,7 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar_main"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/prominent_toolbar_with_tabs_height"
+        android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         app:liftOnScroll="false">
 

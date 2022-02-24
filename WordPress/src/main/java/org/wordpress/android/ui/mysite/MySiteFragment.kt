@@ -31,8 +31,9 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment) {
         var fragment = requireActivity().supportFragmentManager.findFragmentByTag(TAG_MY_SITE_FRAGMENT)
 
         if (fragment == null) {
-            fragment = if (shouldShowTabs())
-                MySiteTabbedFragment.newInstance() else MySiteNonTabbedFragment.newInstance()
+            fragment = MySiteTabbedFragment.newInstance()
+//            fragment = if (shouldShowTabs())
+//                MySiteTabbedFragment.newInstance() else MySiteNonTabbedFragment.newInstance()
             requireActivity().supportFragmentManager.beginTransaction()
                     .add(R.id.fragment_container, fragment, TAG_MY_SITE_FRAGMENT)
                     .commit()
