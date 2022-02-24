@@ -91,6 +91,8 @@ import org.wordpress.android.ui.mysite.MySiteFragment;
 import org.wordpress.android.ui.mysite.MySiteNonTabbedFragment;
 import org.wordpress.android.ui.mysite.MySiteTabbedFragment;
 import org.wordpress.android.ui.mysite.dynamiccards.DynamicCardMenuFragment;
+import org.wordpress.android.ui.mysite.tabs.MySiteDashboardTabFragment;
+import org.wordpress.android.ui.mysite.tabs.MySiteMenuTabFragment;
 import org.wordpress.android.ui.notifications.NotificationsDetailActivity;
 import org.wordpress.android.ui.notifications.NotificationsDetailListFragment;
 import org.wordpress.android.ui.notifications.NotificationsListFragment;
@@ -661,6 +663,10 @@ public interface AppComponent extends AndroidInjector<WordPress> {
     void inject(MySiteNonTabbedFragment object);
 
     void inject(MySiteTabbedFragment object);
+
+    void inject(MySiteDashboardTabFragment object);
+
+    void inject(MySiteMenuTabFragment object);
 
     void inject(BackupDownloadActivity object);
 
