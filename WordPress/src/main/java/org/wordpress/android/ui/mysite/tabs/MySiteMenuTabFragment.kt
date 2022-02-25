@@ -7,7 +7,6 @@ import android.os.Parcelable
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.StringRes
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -86,7 +85,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
         binding = MySiteMenuTabFragmentBinding.bind(view).apply {
             setupContentViews(savedInstanceState)
             setupObservers()
-           // todo: note: swipeToRefreshHelper.isRefreshing = true
+            // todo: note: swipeToRefreshHelper.isRefreshing = true
         }
     }
 
@@ -102,8 +101,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     }
 
     private fun MySiteMenuTabFragmentBinding.setupContentViews(savedInstanceState: Bundle?) {
-        actionableEmptyView.button.setOnClickListener { mySiteViewModel.onAddSitePressed() }
-
         val layoutManager = LinearLayoutManager(activity)
 
         savedInstanceState?.getParcelable<Parcelable>(KEY_LIST_STATE)?.let {
@@ -130,10 +127,9 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     @Suppress("LongMethod")
     private fun MySiteMenuTabFragmentBinding.setupObservers() {
         mySiteViewModel.uiModel.observe(viewLifecycleOwner, { uiModel ->
-          // todo:  hideRefreshIndicatorIfNeeded()
+            // todo:  hideRefreshIndicatorIfNeeded()
             when (val state = uiModel.state) {
                 is State.SiteSelected -> loadData(state.cardAndItems)
-                is State.NoSites -> loadEmptyView(state.shouldShowImage)
             }
         })
         mySiteViewModel.onScrollTo.observeEvent(viewLifecycleOwner, {
@@ -337,20 +333,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
 
     private fun MySiteMenuTabFragmentBinding.loadData(cardAndItems: List<MySiteCardAndItem>) {
         recyclerView.setVisible(true)
-        actionableEmptyView.setVisible(false)
-        mySiteViewModel.setActionableEmptyViewGone(actionableEmptyView.isVisible) {
-            actionableEmptyView.setVisible(false)
-        }
         (recyclerView.adapter as? MySiteAdapter)?.loadData(cardAndItems.filterNot(SiteInfoCard::class.java::isInstance))
-    }
-
-    private fun MySiteMenuTabFragmentBinding.loadEmptyView(shouldShowEmptyViewImage: Boolean) {
-        recyclerView.setVisible(false)
-        mySiteViewModel.setActionableEmptyViewVisible(actionableEmptyView.isVisible) {
-            actionableEmptyView.setVisible(true)
-            actionableEmptyView.image.setVisible(shouldShowEmptyViewImage)
-        }
-        actionableEmptyView.image.setVisible(shouldShowEmptyViewImage)
     }
 
     private fun showSnackbar(holder: SnackbarMessageHolder) {

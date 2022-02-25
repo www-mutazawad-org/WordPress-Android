@@ -3,7 +3,6 @@ package org.wordpress.android.ui.mysite.tabs
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -55,8 +54,6 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
     }
 
     private fun MySiteDashboardTabFragmentBinding.setupContentViews(savedInstanceState: Bundle?) {
-        actionableEmptyView.button.setOnClickListener { mySiteViewModel.onAddSitePressed() }
-
         val layoutManager = LinearLayoutManager(activity)
 
         savedInstanceState?.getParcelable<Parcelable>(KEY_LIST_STATE)?.let {
@@ -81,29 +78,14 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
 //            hideRefreshIndicatorIfNeeded()
             when (val state = uiModel.state) {
                 is State.SiteSelected -> loadData(state.cardAndItems)
-                is State.NoSites -> loadEmptyView(state.shouldShowImage)
             }
         })
     }
 
     private fun MySiteDashboardTabFragmentBinding.loadData(cardAndItems: List<MySiteCardAndItem>) {
         recyclerView.setVisible(true)
-        actionableEmptyView.setVisible(false)
-        mySiteViewModel.setActionableEmptyViewGone(actionableEmptyView.isVisible) {
-            actionableEmptyView.setVisible(false)
-        }
-
         (recyclerView.adapter as? CardsAdapter)?.update(
                 cardAndItems.filterIsInstance<DashboardCards>().first().cards)
-    }
-
-    private fun MySiteDashboardTabFragmentBinding.loadEmptyView(shouldShowEmptyViewImage: Boolean) {
-        recyclerView.setVisible(false)
-        mySiteViewModel.setActionableEmptyViewVisible(actionableEmptyView.isVisible) {
-            actionableEmptyView.setVisible(true)
-            actionableEmptyView.image.setVisible(shouldShowEmptyViewImage)
-        }
-        actionableEmptyView.image.setVisible(shouldShowEmptyViewImage)
     }
 
     override fun onDestroyView() {

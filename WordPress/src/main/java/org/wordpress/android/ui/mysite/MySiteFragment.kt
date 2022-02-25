@@ -8,6 +8,7 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import androidx.appcompat.widget.TooltipCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -53,6 +54,7 @@ import org.wordpress.android.util.getColorFromAttribute
 import org.wordpress.android.util.helpers.SwipeToRefreshHelper
 import org.wordpress.android.util.image.ImageManager
 import org.wordpress.android.util.image.ImageType.USER
+import org.wordpress.android.util.setVisible
 import org.wordpress.android.viewmodel.observeEvent
 import java.io.File
 import javax.inject.Inject
@@ -68,6 +70,13 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
     @Inject lateinit var uploadUtilsWrapper: UploadUtilsWrapper
     @Inject lateinit var imageManager: ImageManager
     @Inject lateinit var uiHelpers: UiHelpers
+
+    val tabTitles: List<String>
+        get() = if (shouldShowTabs()) {
+            listOf("Menu", "Dashboard")
+        } else {
+            listOf("Menu")
+        }
 
     private lateinit var viewModel: MySiteViewModel
     private lateinit var dialogViewModel: BasicDialogViewModel
@@ -106,12 +115,6 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
     }
 
     private fun MySiteFragmentBinding.updateTabs() {
-        val tabTitles = if (shouldShowTabs()) {
-            arrayOf("Menu", "Dashboard")
-        } else {
-            arrayOf("Menu")
-        }
-
         val adapter = MySiteTabsAdapter(this@MySiteFragment, tabTitles)
         viewPager.adapter = adapter
 
@@ -157,6 +160,8 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
     }
 
     private fun MySiteFragmentBinding.setupContentViews() {
+        actionableEmptyView.button.setOnClickListener { viewModel.onAddSitePressed() }
+
         swipeToRefreshHelper = WPSwipeToRefreshHelper.buildSwipeToRefreshHelper(swipeRefreshLayout) {
             if (NetworkUtils.checkConnection(requireActivity())) {
                 viewModel.refresh(isPullToRefresh = true)
@@ -185,6 +190,7 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
             loadGravatar(uiModel.accountAvatarUrl)
             when (val state = uiModel.state) {
                 is State.SiteSelected -> loadData(state.cardAndItems)
+                is State.NoSites -> loadEmptyView(state.shouldShowImage)
             }
         })
         viewModel.onBasicDialogShown.observeEvent(viewLifecycleOwner, { model ->
@@ -218,7 +224,21 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
     }
 
     private fun MySiteFragmentBinding.loadData(cardAndItems: List<MySiteCardAndItem>) {
+        tabLayout.visibility = if (tabTitles.size > 1) View.VISIBLE else View.GONE
+        actionableEmptyView.setVisible(false)
+        viewModel.setActionableEmptyViewGone(actionableEmptyView.isVisible) {
+            actionableEmptyView.setVisible(false)
+        }
         (recyclerView.adapter as? MySiteAdapter)?.loadData(cardAndItems.filterIsInstance<SiteInfoCard>())
+    }
+
+    private fun MySiteFragmentBinding.loadEmptyView(shouldShowEmptyViewImage: Boolean) {
+        tabLayout.setVisible(false)
+        viewModel.setActionableEmptyViewVisible(actionableEmptyView.isVisible) {
+            actionableEmptyView.setVisible(true)
+            actionableEmptyView.image.setVisible(shouldShowEmptyViewImage)
+        }
+        actionableEmptyView.image.setVisible(shouldShowEmptyViewImage)
     }
 
     private fun MySiteFragmentBinding.loadGravatar(avatarUrl: String) =
@@ -241,7 +261,7 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
         is SiteNavigationAction.OpenMediaPicker ->
             mediaPickerLauncher.showSiteIconPicker(this@MySiteFragment, action.site)
         is SiteNavigationAction.OpenCropActivity -> startCropActivity(action.imageUri)
-
+        is SiteNavigationAction.AddNewSite -> SitePickerActivity.addSite(activity, action.hasAccessToken)
         else -> Unit
     }
 
@@ -395,7 +415,7 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
         (requireActivity().supportFragmentManager.fragments)
                 .filterIsInstance<MySiteActionHandler>()
                 .forEach { _ -> handleAction(action) }
-       }
+    }
 
     override fun onSuccessfulInput(input: String, callbackId: Int) {
         viewModel.onSiteNameChosen(input)
