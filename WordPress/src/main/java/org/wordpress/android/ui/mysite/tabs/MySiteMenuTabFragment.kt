@@ -2,7 +2,6 @@ package org.wordpress.android.ui.mysite.tabs
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
@@ -12,9 +11,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.yalantis.ucrop.UCrop
-import com.yalantis.ucrop.UCrop.Options
-import com.yalantis.ucrop.UCropActivity
 import org.wordpress.android.R
 import org.wordpress.android.R.dimen
 import org.wordpress.android.WordPress
@@ -28,55 +24,41 @@ import org.wordpress.android.ui.FullScreenDialogFragment.OnConfirmListener
 import org.wordpress.android.ui.FullScreenDialogFragment.OnDismissListener
 import org.wordpress.android.ui.PagePostCreationSourcesDetail
 import org.wordpress.android.ui.RequestCodes
-import org.wordpress.android.ui.TextInputDialogFragment
 import org.wordpress.android.ui.domains.DomainRegistrationActivity
 import org.wordpress.android.ui.domains.DomainRegistrationActivity.DomainRegistrationPurpose.CTA_DOMAIN_CREDIT_REDEMPTION
 import org.wordpress.android.ui.main.SitePickerActivity
-import org.wordpress.android.ui.main.WPMainActivity
 import org.wordpress.android.ui.mysite.MySiteAction
 import org.wordpress.android.ui.mysite.MySiteActionHandler
 import org.wordpress.android.ui.mysite.MySiteAdapter
 import org.wordpress.android.ui.mysite.MySiteCardAndItem
+import org.wordpress.android.ui.mysite.MySiteCardAndItem.Card.SiteInfoCard
 import org.wordpress.android.ui.mysite.MySiteCardAndItemDecoration
 import org.wordpress.android.ui.mysite.MySiteViewModel
 import org.wordpress.android.ui.mysite.MySiteViewModel.State
 import org.wordpress.android.ui.mysite.SelectedSiteRepository
-import org.wordpress.android.ui.mysite.SiteIconUploadHandler.ItemUploadedModel
 import org.wordpress.android.ui.mysite.SiteNavigationAction
 import org.wordpress.android.ui.mysite.dynamiccards.DynamicCardMenuFragment
 import org.wordpress.android.ui.mysite.dynamiccards.DynamicCardMenuViewModel
 import org.wordpress.android.ui.pages.SnackbarMessageHolder
-import org.wordpress.android.ui.photopicker.MediaPickerConstants
 import org.wordpress.android.ui.photopicker.MediaPickerLauncher
-import org.wordpress.android.ui.photopicker.PhotoPickerActivity.PhotoPickerMediaSource
-import org.wordpress.android.ui.posts.BasicDialogViewModel
-import org.wordpress.android.ui.posts.BasicDialogViewModel.BasicDialogModel
 import org.wordpress.android.ui.posts.PostListType
 import org.wordpress.android.ui.posts.QuickStartPromptDialogFragment
 import org.wordpress.android.ui.quickstart.QuickStartFullScreenDialogFragment
 import org.wordpress.android.ui.stats.StatsTimeframe
-import org.wordpress.android.ui.uploads.UploadService
 import org.wordpress.android.ui.uploads.UploadUtilsWrapper
 import org.wordpress.android.ui.utils.UiHelpers
 import org.wordpress.android.ui.utils.UiString.UiStringText
-import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.AppLog.T.MAIN
-import org.wordpress.android.util.AppLog.T.UTILS
 import org.wordpress.android.util.QuickStartUtilsWrapper
 import org.wordpress.android.util.SnackbarItem
 import org.wordpress.android.util.SnackbarItem.Action
 import org.wordpress.android.util.SnackbarItem.Info
 import org.wordpress.android.util.SnackbarSequencer
-import org.wordpress.android.util.UriWrapper
-import org.wordpress.android.util.getColorFromAttribute
 import org.wordpress.android.util.image.ImageManager
 import org.wordpress.android.util.setVisible
 import org.wordpress.android.viewmodel.observeEvent
-import java.io.File
 import javax.inject.Inject
 
 class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
-        TextInputDialogFragment.Callback,
         OnConfirmListener,
         OnDismissListener,
         MySiteActionHandler {
@@ -88,7 +70,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     @Inject lateinit var uploadUtilsWrapper: UploadUtilsWrapper
     @Inject lateinit var quickStartUtils: QuickStartUtilsWrapper
     private lateinit var mySiteViewModel: MySiteViewModel
-    private lateinit var dialogViewModel: BasicDialogViewModel
     private lateinit var dynamicCardMenuViewModel: DynamicCardMenuViewModel
     private lateinit var viewModel: MySiteTabViewModel
     private var binding: MySiteMenuTabFragmentBinding? = null
@@ -116,8 +97,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     private fun initViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteTabViewModel::class.java)
         mySiteViewModel = ViewModelProvider(this, viewModelFactory).get(MySiteViewModel::class.java)
-        dialogViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
-                .get(BasicDialogViewModel::class.java)
         dynamicCardMenuViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(DynamicCardMenuViewModel::class.java)
     }
@@ -160,29 +139,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
         mySiteViewModel.onScrollTo.observeEvent(viewLifecycleOwner, {
             (recyclerView.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(it, 0)
         })
-        mySiteViewModel.onBasicDialogShown.observeEvent(viewLifecycleOwner, { model ->
-            dialogViewModel.showDialog(requireActivity().supportFragmentManager,
-                    BasicDialogModel(
-                            model.tag,
-                            getString(model.title),
-                            getString(model.message),
-                            getString(model.positiveButtonLabel),
-                            model.negativeButtonLabel?.let { label -> getString(label) },
-                            model.cancelButtonLabel?.let { label -> getString(label) }
-                    ))
-        })
-        mySiteViewModel.onTextInputDialogShown.observeEvent(viewLifecycleOwner, { model ->
-            val inputDialog = TextInputDialogFragment.newInstance(
-                    getString(model.title),
-                    model.initialText,
-                    getString(model.hint),
-                    model.isMultiline,
-                    model.isInputEnabled,
-                    model.callbackId
-            )
-            inputDialog.setTargetFragment(this@MySiteMenuTabFragment, 0)
-            inputDialog.show(parentFragmentManager, TextInputDialogFragment.TAG)
-        })
         mySiteViewModel.onDynamicCardMenuShown.observeEvent(viewLifecycleOwner, { dynamicCardMenuModel ->
             ((parentFragmentManager.findFragmentByTag(dynamicCardMenuModel.id) as? DynamicCardMenuFragment)
                     ?: DynamicCardMenuFragment.newInstance(
@@ -201,23 +157,14 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
             )
             showSnackbar(SnackbarMessageHolder(UiStringText(message)))
         })
-        mySiteViewModel.onMediaUpload.observeEvent(viewLifecycleOwner, { UploadService.uploadMedia(requireActivity(), it) })
-        dialogViewModel.onInteraction.observeEvent(viewLifecycleOwner, { mySiteViewModel.onDialogInteraction(it) })
         dynamicCardMenuViewModel.onInteraction.observeEvent(viewLifecycleOwner, { interaction ->
             mySiteViewModel.onQuickStartMenuInteraction(interaction)
         })
-        mySiteViewModel.onUploadedItem.observeEvent(viewLifecycleOwner, { handleUploadedItem(it) })
         // todo: mySiteViewModel.onShowSwipeRefreshLayout.observeEvent(viewLifecycleOwner, { showSwipeToRefreshLayout(it) })
     }
 
     @Suppress("ComplexMethod", "LongMethod")
     private fun handleNavigationAction(action: SiteNavigationAction) = when (action) {
-        is SiteNavigationAction.OpenMeScreen -> ActivityLauncher.viewMeActivityForResult(activity)
-        is SiteNavigationAction.OpenSitePicker -> ActivityLauncher.showSitePickerForResult(activity, action.site)
-        is SiteNavigationAction.OpenSite -> ActivityLauncher.viewCurrentSite(activity, action.site, true)
-        is SiteNavigationAction.OpenMediaPicker ->
-            mediaPickerLauncher.showSiteIconPicker(this@MySiteMenuTabFragment, action.site)
-        is SiteNavigationAction.OpenCropActivity -> startCropActivity(action.imageUri)
         is SiteNavigationAction.OpenActivityLog -> ActivityLauncher.viewActivityLogList(activity, action.site)
         is SiteNavigationAction.OpenBackup -> ActivityLauncher.viewBackupList(activity, action.site)
         is SiteNavigationAction.OpenScan -> ActivityLauncher.viewScan(activity, action.site)
@@ -295,6 +242,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
             ActivityLauncher.viewCurrentBlogPostsOfType(requireActivity(), action.site, PostListType.SCHEDULED)
         is SiteNavigationAction.OpenTodaysStats ->
             ActivityLauncher.viewBlogStatsForTimeframe(requireActivity(), action.site, StatsTimeframe.DAY)
+        else -> Unit
     }
 
     private fun openQuickStartFullScreenDialog(action: SiteNavigationAction.OpenQuickStartFullScreenDialog) {
@@ -306,45 +254,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
                 .setContent(QuickStartFullScreenDialogFragment::class.java, bundle)
                 .build()
                 .show(requireActivity().supportFragmentManager, FullScreenDialogFragment.TAG)
-    }
-
-    private fun handleUploadedItem(itemUploadedModel: ItemUploadedModel) = when (itemUploadedModel) {
-        is ItemUploadedModel.PostUploaded -> {
-            uploadUtilsWrapper.onPostUploadedSnackbarHandler(
-                    activity,
-                    requireActivity().findViewById(R.id.coordinator),
-                    isError = true,
-                    isFirstTimePublish = false,
-                    post = itemUploadedModel.post,
-                    errorMessage = itemUploadedModel.errorMessage,
-                    site = itemUploadedModel.site
-            )
-        }
-        is ItemUploadedModel.MediaUploaded -> {
-            uploadUtilsWrapper.onMediaUploadedSnackbarHandler(
-                    activity,
-                    requireActivity().findViewById(R.id.coordinator),
-                    isError = true,
-                    mediaList = itemUploadedModel.media,
-                    site = itemUploadedModel.site,
-                    messageForUser = itemUploadedModel.errorMessage
-            )
-        }
-    }
-
-    private fun startCropActivity(imageUri: UriWrapper) {
-        val context = activity ?: return
-        val options = Options()
-        options.setShowCropGrid(false)
-        options.setStatusBarColor(context.getColorFromAttribute(android.R.attr.statusBarColor))
-        options.setToolbarColor(context.getColorFromAttribute(R.attr.wpColorAppBar))
-        options.setToolbarWidgetColor(context.getColorFromAttribute(R.attr.colorOnSurface))
-        options.setAllowedGestures(UCropActivity.SCALE, UCropActivity.NONE, UCropActivity.NONE)
-        options.setHideBottomControls(true)
-        UCrop.of(imageUri.uri, Uri.fromFile(File(context.cacheDir, "cropped_for_site_icon.jpg")))
-                .withAspectRatio(1f, 1f)
-                .withOptions(options)
-                .start(requireActivity(), this)
     }
 
     override fun onResume() {
@@ -382,48 +291,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
             RequestCodes.DO_LOGIN -> if (resultCode == Activity.RESULT_OK) {
                 mySiteViewModel.handleSuccessfulLoginResult()
             }
-            RequestCodes.SITE_ICON_PICKER -> {
-                if (resultCode != Activity.RESULT_OK) {
-                    return
-                }
-                when {
-                    data.hasExtra(MediaPickerConstants.EXTRA_MEDIA_ID) -> {
-                        val mediaId = data.getLongExtra(MediaPickerConstants.EXTRA_MEDIA_ID, 0)
-                        mySiteViewModel.handleSelectedSiteIcon(mediaId)
-                    }
-                    data.hasExtra(MediaPickerConstants.EXTRA_MEDIA_URIS) -> {
-                        val mediaUriStringsArray = data.getStringArrayExtra(
-                                MediaPickerConstants.EXTRA_MEDIA_URIS
-                        ) ?: return
-
-                        val source = PhotoPickerMediaSource.fromString(
-                                data.getStringExtra(MediaPickerConstants.EXTRA_MEDIA_SOURCE)
-                        )
-                        val iconUrl = mediaUriStringsArray.getOrNull(0) ?: return
-                        mySiteViewModel.handleTakenSiteIcon(iconUrl, source)
-                    }
-                    else -> {
-                        AppLog.e(
-                                UTILS,
-                                "Can't resolve picked or captured image"
-                        )
-                    }
-                }
-            }
-            RequestCodes.STORIES_PHOTO_PICKER,
-            RequestCodes.PHOTO_PICKER -> if (resultCode == Activity.RESULT_OK) {
-                mySiteViewModel.handleStoriesPhotoPickerResult(data)
-            }
-            UCrop.REQUEST_CROP -> {
-                if (resultCode == UCrop.RESULT_ERROR) {
-                    AppLog.e(
-                            MAIN,
-                            "Image cropping failed!",
-                            UCrop.getError(data)
-                    )
-                }
-                mySiteViewModel.handleCropResult(UCrop.getOutput(data), resultCode == Activity.RESULT_OK)
-            }
             RequestCodes.DOMAIN_REGISTRATION -> if (resultCode == Activity.RESULT_OK) {
                 mySiteViewModel.handleSuccessfulDomainRegistrationResult(data.getStringExtra(DomainRegistrationActivity.RESULT_REGISTERED_DOMAIN_EMAIL))
             }
@@ -435,16 +302,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
                                 SelectedSiteRepository.UNAVAILABLE
                         )
                 )
-            }
-            RequestCodes.SITE_PICKER -> {
-                if (data.getIntExtra(WPMainActivity.ARG_CREATE_SITE, 0) == RequestCodes.CREATE_SITE) {
-                    mySiteViewModel.performFirstStepAfterSiteCreation(
-                            data.getIntExtra(
-                                    SitePickerActivity.KEY_SITE_LOCAL_ID,
-                                    SelectedSiteRepository.UNAVAILABLE
-                            )
-                    )
-                }
             }
             RequestCodes.EDIT_LANDING_PAGE -> {
                 mySiteViewModel.checkAndStartQuickStart(
@@ -484,7 +341,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
         mySiteViewModel.setActionableEmptyViewGone(actionableEmptyView.isVisible) {
             actionableEmptyView.setVisible(false)
         }
-        (recyclerView.adapter as? MySiteAdapter)?.loadData(cardAndItems)
+        (recyclerView.adapter as? MySiteAdapter)?.loadData(cardAndItems.filterNot(SiteInfoCard::class.java::isInstance))
     }
 
     private fun MySiteMenuTabFragmentBinding.loadEmptyView(shouldShowEmptyViewImage: Boolean) {
@@ -516,22 +373,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
                     )
             )
         }
-    }
-
-//    private fun showSwipeToRefreshLayout(isEnabled: Boolean) {
-//        swipeToRefreshHelper.setEnabled(isEnabled)
-//    }
-//
-//    private fun hideRefreshIndicatorIfNeeded() {
-//        swipeToRefreshHelper.isRefreshing = mySiteViewModel.isRefreshing()
-//    }
-
-    override fun onSuccessfulInput(input: String, callbackId: Int) {
-        mySiteViewModel.onSiteNameChosen(input)
-    }
-
-    override fun onTextInputDialogDismissed(callbackId: Int) {
-        mySiteViewModel.onSiteNameChooserDismissed()
     }
 
     private fun onPositiveClicked() {
