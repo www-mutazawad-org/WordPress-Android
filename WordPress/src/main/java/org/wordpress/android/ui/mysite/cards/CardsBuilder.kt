@@ -28,27 +28,27 @@ class CardsBuilder @Inject constructor(
     private val mySiteDashboardPhase2FeatureConfig: MySiteDashboardPhase2FeatureConfig
 ) {
     fun build(
-        siteInfoCardBuilderParams: SiteInfoCardBuilderParams,
-        quickActionsCardBuilderParams: QuickActionsCardBuilderParams,
-        domainRegistrationCardBuilderParams: DomainRegistrationCardBuilderParams,
-        quickStartCardBuilderParams: QuickStartCardBuilderParams,
-        dashboardCardsBuilderParams: DashboardCardsBuilderParams
+        siteInfoCardBuilderParams: SiteInfoCardBuilderParams? = null,
+        quickActionsCardBuilderParams: QuickActionsCardBuilderParams? = null,
+        domainRegistrationCardBuilderParams: DomainRegistrationCardBuilderParams? = null,
+        quickStartCardBuilderParams: QuickStartCardBuilderParams? = null,
+        dashboardCardsBuilderParams: DashboardCardsBuilderParams? = null
     ): List<MySiteCardAndItem> {
         val cards = mutableListOf<MySiteCardAndItem>()
-        cards.add(siteInfoCardBuilder.buildSiteInfoCard(siteInfoCardBuilderParams))
+        siteInfoCardBuilderParams?.let { cards.add(siteInfoCardBuilder.buildSiteInfoCard(it)) }
         if (buildConfigWrapper.isQuickActionEnabled) {
-            cards.add(quickActionsCardBuilder.build(quickActionsCardBuilderParams))
+            quickActionsCardBuilderParams?.let { cards.add(quickActionsCardBuilder.build(it)) }
         }
-        if (domainRegistrationCardBuilderParams.isDomainCreditAvailable) {
-            cards.add(trackAndBuildDomainRegistrationCard(domainRegistrationCardBuilderParams))
+        if (domainRegistrationCardBuilderParams?.isDomainCreditAvailable == true) {
+            domainRegistrationCardBuilderParams?.let { cards.add(trackAndBuildDomainRegistrationCard(it)) }
         }
         if (!quickStartDynamicCardsFeatureConfig.isEnabled()) {
-            quickStartCardBuilderParams.quickStartCategories.takeIf { it.isNotEmpty() }?.let {
+            quickStartCardBuilderParams?.quickStartCategories?.takeIf { it.isNotEmpty() }?.let {
                 cards.add(quickStartCardBuilder.build(quickStartCardBuilderParams))
             }
         }
         if (mySiteDashboardPhase2FeatureConfig.isEnabled()) {
-            cards.add(dashboardCardsBuilder.build(dashboardCardsBuilderParams))
+            dashboardCardsBuilderParams?.let { cards.add(dashboardCardsBuilder.build(it)) }
         }
         return cards
     }
