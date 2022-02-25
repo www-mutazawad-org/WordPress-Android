@@ -32,12 +32,11 @@ import org.wordpress.android.ui.mysite.MySiteAdapter
 import org.wordpress.android.ui.mysite.MySiteCardAndItem
 import org.wordpress.android.ui.mysite.MySiteCardAndItem.Card.SiteInfoCard
 import org.wordpress.android.ui.mysite.MySiteCardAndItemDecoration
-import org.wordpress.android.ui.mysite.MySiteViewModel
-import org.wordpress.android.ui.mysite.MySiteViewModel.State
 import org.wordpress.android.ui.mysite.SelectedSiteRepository
 import org.wordpress.android.ui.mysite.SiteNavigationAction
 import org.wordpress.android.ui.mysite.dynamiccards.DynamicCardMenuFragment
 import org.wordpress.android.ui.mysite.dynamiccards.DynamicCardMenuViewModel
+import org.wordpress.android.ui.mysite.tabs.MySiteMenuTabViewModel.State
 import org.wordpress.android.ui.pages.SnackbarMessageHolder
 import org.wordpress.android.ui.photopicker.MediaPickerLauncher
 import org.wordpress.android.ui.posts.PostListType
@@ -68,7 +67,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     @Inject lateinit var mediaPickerLauncher: MediaPickerLauncher
     @Inject lateinit var uploadUtilsWrapper: UploadUtilsWrapper
     @Inject lateinit var quickStartUtils: QuickStartUtilsWrapper
-    private lateinit var mySiteViewModel: MySiteViewModel
     private lateinit var dynamicCardMenuViewModel: DynamicCardMenuViewModel
     private lateinit var viewModel: MySiteMenuTabViewModel
     private var binding: MySiteMenuTabFragmentBinding? = null
@@ -95,7 +93,6 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteMenuTabViewModel::class.java)
-        mySiteViewModel = ViewModelProvider(this, viewModelFactory).get(MySiteViewModel::class.java)
         dynamicCardMenuViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(DynamicCardMenuViewModel::class.java)
     }
@@ -126,16 +123,16 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
 
     @Suppress("LongMethod")
     private fun MySiteMenuTabFragmentBinding.setupObservers() {
-        mySiteViewModel.uiModel.observe(viewLifecycleOwner, { uiModel ->
+        viewModel.uiModel.observe(viewLifecycleOwner, { uiModel ->
             // todo:  hideRefreshIndicatorIfNeeded()
             when (val state = uiModel.state) {
                 is State.SiteSelected -> loadData(state.cardAndItems)
             }
         })
-        mySiteViewModel.onScrollTo.observeEvent(viewLifecycleOwner, {
+        viewModel.onScrollTo.observeEvent(viewLifecycleOwner, {
             (recyclerView.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(it, 0)
         })
-        mySiteViewModel.onDynamicCardMenuShown.observeEvent(viewLifecycleOwner, { dynamicCardMenuModel ->
+        viewModel.onDynamicCardMenuShown.observeEvent(viewLifecycleOwner, { dynamicCardMenuModel ->
             ((parentFragmentManager.findFragmentByTag(dynamicCardMenuModel.id) as? DynamicCardMenuFragment)
                     ?: DynamicCardMenuFragment.newInstance(
                             dynamicCardMenuModel.cardType,
@@ -143,9 +140,9 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
                     ))
                     .show(parentFragmentManager, dynamicCardMenuModel.id)
         })
-        mySiteViewModel.onNavigation.observeEvent(viewLifecycleOwner, { handleNavigationAction(it) })
-        mySiteViewModel.onSnackbarMessage.observeEvent(viewLifecycleOwner, { showSnackbar(it) })
-        mySiteViewModel.onQuickStartMySitePrompts.observeEvent(viewLifecycleOwner, { activeTutorialPrompt ->
+        viewModel.onNavigation.observeEvent(viewLifecycleOwner, { handleNavigationAction(it) })
+        viewModel.onSnackbarMessage.observeEvent(viewLifecycleOwner, { showSnackbar(it) })
+        viewModel.onQuickStartMySitePrompts.observeEvent(viewLifecycleOwner, { activeTutorialPrompt ->
             val message = quickStartUtils.stylizeQuickStartPrompt(
                     requireContext(),
                     activeTutorialPrompt.shortMessagePrompt,
@@ -154,7 +151,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
             showSnackbar(SnackbarMessageHolder(UiStringText(message)))
         })
         dynamicCardMenuViewModel.onInteraction.observeEvent(viewLifecycleOwner, { interaction ->
-            mySiteViewModel.onQuickStartMenuInteraction(interaction)
+            viewModel.onQuickStartMenuInteraction(interaction)
         })
         // todo: mySiteViewModel.onShowSwipeRefreshLayout.observeEvent(viewLifecycleOwner, { showSwipeToRefreshLayout(it) })
     }
@@ -254,15 +251,15 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
 
     override fun onResume() {
         super.onResume()
-        mySiteViewModel.onResume()
+        viewModel.onResume()
     }
 
     override fun onPause() {
         super.onPause()
         activity?.let {
             if (!it.isChangingConfigurations) {
-                mySiteViewModel.clearActiveQuickStartTask()
-                mySiteViewModel.dismissQuickStartNotice()
+                viewModel.clearActiveQuickStartTask()
+                viewModel.dismissQuickStartNotice()
             }
         }
     }
@@ -285,14 +282,14 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
         }
         when (requestCode) {
             RequestCodes.DO_LOGIN -> if (resultCode == Activity.RESULT_OK) {
-                mySiteViewModel.handleSuccessfulLoginResult()
+                viewModel.handleSuccessfulLoginResult()
             }
             RequestCodes.DOMAIN_REGISTRATION -> if (resultCode == Activity.RESULT_OK) {
-                mySiteViewModel.handleSuccessfulDomainRegistrationResult(data.getStringExtra(DomainRegistrationActivity.RESULT_REGISTERED_DOMAIN_EMAIL))
+                viewModel.handleSuccessfulDomainRegistrationResult(data.getStringExtra(DomainRegistrationActivity.RESULT_REGISTERED_DOMAIN_EMAIL))
             }
             RequestCodes.LOGIN_EPILOGUE,
             RequestCodes.CREATE_SITE -> {
-                mySiteViewModel.performFirstStepAfterSiteCreation(
+                viewModel.performFirstStepAfterSiteCreation(
                         data.getIntExtra(
                                 SitePickerActivity.KEY_SITE_LOCAL_ID,
                                 SelectedSiteRepository.UNAVAILABLE
@@ -300,7 +297,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
                 )
             }
             RequestCodes.EDIT_LANDING_PAGE -> {
-                mySiteViewModel.checkAndStartQuickStart(
+                viewModel.checkAndStartQuickStart(
                         data.getIntExtra(
                                 SitePickerActivity.KEY_SITE_LOCAL_ID,
                                 SelectedSiteRepository.UNAVAILABLE
@@ -359,20 +356,20 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     }
 
     private fun onPositiveClicked() {
-        mySiteViewModel.startQuickStart()
+        viewModel.startQuickStart()
     }
 
     private fun onNegativeClicked() {
-        mySiteViewModel.ignoreQuickStart()
+        viewModel.ignoreQuickStart()
     }
 
     override fun onConfirm(result: Bundle?) {
         val task = result?.getSerializable(QuickStartFullScreenDialogFragment.RESULT_TASK) as? QuickStartTask
-        task?.let { mySiteViewModel.onQuickStartTaskCardClick(it) }
+        task?.let { viewModel.onQuickStartTaskCardClick(it) }
     }
 
     override fun onDismiss() {
-        mySiteViewModel.onQuickStartFullScreenDialogDismiss()
+        viewModel.onQuickStartFullScreenDialogDismiss()
     }
 
     override fun handleAction(action: MySiteAction) {
