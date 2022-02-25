@@ -71,7 +71,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     @Inject lateinit var quickStartUtils: QuickStartUtilsWrapper
     private lateinit var mySiteViewModel: MySiteViewModel
     private lateinit var dynamicCardMenuViewModel: DynamicCardMenuViewModel
-    private lateinit var viewModel: MySiteTabViewModel
+    private lateinit var viewModel: MySiteMenuTabViewModel
     private var binding: MySiteMenuTabFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +95,7 @@ class MySiteMenuTabFragment : Fragment(R.layout.my_site_menu_tab_fragment),
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteTabViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteMenuTabViewModel::class.java)
         mySiteViewModel = ViewModelProvider(this, viewModelFactory).get(MySiteViewModel::class.java)
         dynamicCardMenuViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
                 .get(DynamicCardMenuViewModel::class.java)

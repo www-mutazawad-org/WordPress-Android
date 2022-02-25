@@ -27,7 +27,7 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
     @Inject lateinit var imageManager: ImageManager
     @Inject lateinit var uiHelpers: UiHelpers
 
-    private lateinit var viewModel: MySiteTabViewModel
+    private lateinit var viewModel: MySiteDashboardTabViewModel
     private lateinit var mySiteViewModel: MySiteViewModel
     private var binding: MySiteDashboardTabFragmentBinding? = null
 
@@ -50,7 +50,7 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
     }
 
     private fun initViewModel() {
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteTabViewModel::class.java)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteDashboardTabViewModel::class.java)
         mySiteViewModel = ViewModelProvider(this, viewModelFactory).get(MySiteViewModel::class.java)
     }
 
