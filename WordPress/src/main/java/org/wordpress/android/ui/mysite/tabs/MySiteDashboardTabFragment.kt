@@ -10,15 +10,20 @@ import org.wordpress.android.R
 import org.wordpress.android.R.dimen
 import org.wordpress.android.WordPress
 import org.wordpress.android.databinding.MySiteDashboardTabFragmentBinding
+import org.wordpress.android.ui.ActivityLauncher
+import org.wordpress.android.ui.PagePostCreationSourcesDetail
 import org.wordpress.android.ui.mysite.MySiteCardAndItem
 import org.wordpress.android.ui.mysite.MySiteCardAndItem.Card.DashboardCards
-import org.wordpress.android.ui.mysite.MySiteViewModel
-import org.wordpress.android.ui.mysite.MySiteViewModel.State
+import org.wordpress.android.ui.mysite.SiteNavigationAction
 import org.wordpress.android.ui.mysite.cards.dashboard.CardsAdapter
 import org.wordpress.android.ui.mysite.cards.dashboard.CardsDecoration
+import org.wordpress.android.ui.mysite.tabs.MySiteDashboardTabViewModel.State
+import org.wordpress.android.ui.posts.PostListType
+import org.wordpress.android.ui.stats.StatsTimeframe
 import org.wordpress.android.ui.utils.UiHelpers
 import org.wordpress.android.util.image.ImageManager
 import org.wordpress.android.util.setVisible
+import org.wordpress.android.viewmodel.observeEvent
 import javax.inject.Inject
 
 class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragment) {
@@ -27,7 +32,6 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
     @Inject lateinit var uiHelpers: UiHelpers
 
     private lateinit var viewModel: MySiteDashboardTabViewModel
-    private lateinit var mySiteViewModel: MySiteViewModel
     private var binding: MySiteDashboardTabFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +54,6 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteDashboardTabViewModel::class.java)
-        mySiteViewModel = ViewModelProvider(this, viewModelFactory).get(MySiteViewModel::class.java)
     }
 
     private fun MySiteDashboardTabFragmentBinding.setupContentViews(savedInstanceState: Bundle?) {
@@ -74,18 +77,43 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
 
     @Suppress("LongMethod")
     private fun MySiteDashboardTabFragmentBinding.setupObservers() {
-        mySiteViewModel.uiModel.observe(viewLifecycleOwner, { uiModel ->
+        viewModel.uiModel.observe(viewLifecycleOwner, { uiModel ->
 //            hideRefreshIndicatorIfNeeded()
             when (val state = uiModel.state) {
                 is State.SiteSelected -> loadData(state.cardAndItems)
             }
         })
+        viewModel.onNavigation.observeEvent(viewLifecycleOwner, { handleNavigationAction(it) })
     }
 
     private fun MySiteDashboardTabFragmentBinding.loadData(cardAndItems: List<MySiteCardAndItem>) {
         recyclerView.setVisible(true)
         (recyclerView.adapter as? CardsAdapter)?.update(
                 cardAndItems.filterIsInstance<DashboardCards>().first().cards)
+    }
+
+    @Suppress("ComplexMethod", "LongMethod")
+    private fun handleNavigationAction(action: SiteNavigationAction) = when (action) {
+        is SiteNavigationAction.OpenDraftsPosts ->
+            ActivityLauncher.viewCurrentBlogPostsOfType(requireActivity(), action.site, PostListType.DRAFTS)
+        is SiteNavigationAction.OpenScheduledPosts ->
+            ActivityLauncher.viewCurrentBlogPostsOfType(requireActivity(), action.site, PostListType.SCHEDULED)
+        is SiteNavigationAction.OpenEditorToCreateNewPost ->
+            ActivityLauncher.addNewPostForResult(
+                    requireActivity(),
+                    action.site,
+                    false,
+                    PagePostCreationSourcesDetail.POST_FROM_MY_SITE
+            )
+        // The below navigation is temporary and as such not utilizing the 'action.postId' in order to navigate to the
+        // 'Edit Post' screen. Instead, it fallbacks to navigating to the 'Posts' screen and targeting a specific tab.
+        is SiteNavigationAction.EditDraftPost ->
+            ActivityLauncher.viewCurrentBlogPostsOfType(requireActivity(), action.site, PostListType.DRAFTS)
+        is SiteNavigationAction.EditScheduledPost ->
+            ActivityLauncher.viewCurrentBlogPostsOfType(requireActivity(), action.site, PostListType.SCHEDULED)
+        is SiteNavigationAction.OpenTodaysStats ->
+            ActivityLauncher.viewBlogStatsForTimeframe(requireActivity(), action.site, StatsTimeframe.DAY)
+        else -> Unit
     }
 
     override fun onDestroyView() {
@@ -95,7 +123,7 @@ class MySiteDashboardTabFragment : Fragment(R.layout.my_site_dashboard_tab_fragm
 
     override fun onResume() {
         super.onResume()
-        mySiteViewModel.onResume()
+        viewModel.onResume()
     }
 
     companion object {
