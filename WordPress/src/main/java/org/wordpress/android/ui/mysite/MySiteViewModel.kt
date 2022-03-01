@@ -16,7 +16,7 @@ class MySiteViewModel @Inject constructor(
     private val buildConfigWrapper: BuildConfigWrapper,
     private val mySiteDashboardTabsFeatureConfig: MySiteDashboardTabsFeatureConfig
 ) : ScopedViewModel(mainDispatcher) {
-    private val isMySiteTabsEnabled: Boolean
+    val isMySiteTabsEnabled: Boolean
         get() = mySiteDashboardTabsFeatureConfig.isEnabled() && buildConfigWrapper.isMySiteTabsEnabled
 
     val tabTitles: List<UiString>
