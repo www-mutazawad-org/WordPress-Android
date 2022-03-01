@@ -60,6 +60,7 @@ import org.wordpress.android.ui.mysite.dynamiccards.DynamicCardsBuilder
 import org.wordpress.android.ui.mysite.items.SiteItemsBuilder
 import org.wordpress.android.ui.mysite.items.SiteItemsTracker
 import org.wordpress.android.ui.mysite.items.listitem.ListItemAction
+import org.wordpress.android.ui.mysite.tabs.MySiteTabFragment
 import org.wordpress.android.ui.pages.SnackbarMessageHolder
 import org.wordpress.android.ui.photopicker.PhotoPickerActivity.PhotoPickerMediaSource
 import org.wordpress.android.ui.photopicker.PhotoPickerActivity.PhotoPickerMediaSource.ANDROID_CAMERA
@@ -223,6 +224,12 @@ class MySiteViewModel @Inject constructor(
         UiModel(currentAvatarUrl.orEmpty(), state)
     }
 
+    // todo: annmarie - this is all temporary - will not stay in this form
+    private var tabType: String = MySiteTabFragment.MY_SITE_TAB_TYPE_SITE_MENU
+    fun setTabType(value: String) {
+        tabType = value
+    }
+
     private fun CardsUpdate.checkAndShowSnackbarError() {
         if (showSnackbarError) {
             _onSnackbarMessage
@@ -331,16 +338,27 @@ class MySiteViewModel @Inject constructor(
                 this::onQuickStartTaskCardClick
         )
 
-        val siteItems = siteItemsBuilder.build(
-                SiteItemsBuilderParams(
-                        site = site,
-                        activeTask = activeTask,
-                        backupAvailable = backupAvailable,
-                        scanAvailable = scanAvailable,
-                        onClick = this::onItemClick
-                )
-        )
-        return orderForDisplay(infoItem, cardsResult, dynamicCards, siteItems)
+        val siteItems = if (tabType != MySiteTabFragment.MY_SITE_TAB_TYPE_DASHBOARD) {
+            siteItemsBuilder.build(
+                    SiteItemsBuilderParams(
+                            site = site,
+                            activeTask = activeTask,
+                            backupAvailable = backupAvailable,
+                            scanAvailable = scanAvailable,
+                            onClick = this::onItemClick
+                    )
+            )
+        } else {
+            listOf()
+        }
+
+        val updatedCardResults = if (tabType == MySiteTabFragment.MY_SITE_TAB_TYPE_SITE_MENU) {
+            cardsResult.filterNot { it is DashboardCards }.toList()
+        } else {
+            cardsResult
+        }
+
+        return orderForDisplay(infoItem, updatedCardResults, dynamicCards, siteItems)
     }
 
     private fun onTodaysStatsCardFooterLinkClick() {
