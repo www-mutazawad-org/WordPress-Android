@@ -94,8 +94,8 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment) {
             tab.text = uiHelpers.getTextOfUiString(requireContext(), tabTitles[position])
         }.attach()
 
-        // todo: annmarie - do something more clever here
-        tabLayout.setVisible(true)
+        // todo: annmarie - do something more clever here, but for now this is OK
+        tabLayout.setVisible(viewModel.isMySiteTabsEnabled)
     }
 
     override fun onDestroyView() {
