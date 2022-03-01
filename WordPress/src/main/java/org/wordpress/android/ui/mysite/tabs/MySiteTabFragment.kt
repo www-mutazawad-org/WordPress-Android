@@ -100,18 +100,23 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        initSoftKeyboard()
+        initDagger()
+    }
+
+    private fun initSoftKeyboard() {
         // The following prevents the soft keyboard from leaving a white space when dismissed.
         requireActivity().window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+    }
+
+    private fun initDagger() {
         (requireActivity().application as WordPress).component().inject(this)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteViewModel::class.java)
-        dialogViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
-                .get(BasicDialogViewModel::class.java)
-        dynamicCardMenuViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
-                .get(DynamicCardMenuViewModel::class.java)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initViewModels()
+        initTabType()
         binding = MySiteTabFragmentBinding.bind(view).apply {
             setupContentViews(savedInstanceState)
             setupObservers()
@@ -119,8 +124,29 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         }
     }
 
+    private lateinit var tabType: String
+    private fun initTabType() {
+        // todo: annmarie - if we go this route, then we might want to think about instanceState
+        tabType = if (viewModel.isMySiteTabsEnabled) {
+            this.arguments?.getString(KEY_MY_SITE_TAB_TYPE, MY_SITE_TAB_TYPE_SITE_MENU) ?: MY_SITE_TAB_TYPE_SITE_MENU
+        } else {
+            MY_SITE_TAB_TYPE_EVERYTHING
+        }
+        // todo: annmarie - This will not work when we are sharing the view model
+        viewModel.setTabType(tabType)
+    }
+
+    private fun initViewModels() {
+        viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteViewModel::class.java)
+        dialogViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(BasicDialogViewModel::class.java)
+        dynamicCardMenuViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(DynamicCardMenuViewModel::class.java)
+    }
+
     private fun MySiteTabFragmentBinding.setupContentViews(savedInstanceState: Bundle?) {
-        // todo: annmarie       actionableEmptyView.button.setOnClickListener { viewModel.onAddSitePressed() }
+        // todo: annmarie  - handle actionableEmptyView in MySiteFragment
+        //  actionableEmptyView.button.setOnClickListener { viewModel.onAddSitePressed() }
 
         val layoutManager = LinearLayoutManager(activity)
 
@@ -556,8 +582,18 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         private const val KEY_LIST_STATE = "key_list_state"
         private const val KEY_NESTED_LISTS_STATES = "key_nested_lists_states"
         private const val TAG_QUICK_START_DIALOG = "TAG_QUICK_START_DIALOG"
-        fun newInstance(): MySiteTabFragment {
-            return MySiteTabFragment()
+
+        private const val KEY_MY_SITE_TAB_TYPE = "key_my_site_tab_type"
+        const val MY_SITE_TAB_TYPE_DASHBOARD = "my_site_tab_type_dashboard"
+        const val MY_SITE_TAB_TYPE_SITE_MENU = "my_site_tab_type_site_menu"
+        const val MY_SITE_TAB_TYPE_EVERYTHING = "my_site_tab_type_everything"
+
+        // todo: annmarie - perhaps use an enum value ?
+        @JvmStatic
+        fun newInstance(tabType: String) = MySiteTabFragment().apply {
+            arguments = Bundle().apply {
+                putString(KEY_MY_SITE_TAB_TYPE, tabType)
+            }
         }
     }
 

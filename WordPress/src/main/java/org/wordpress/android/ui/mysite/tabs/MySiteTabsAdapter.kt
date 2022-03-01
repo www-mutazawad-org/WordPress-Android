@@ -12,9 +12,9 @@ class MySiteTabsAdapter(
 
     override fun createFragment(position: Int): Fragment {
         return if (position == 0) {
-            MySiteTabFragment.newInstance()
+            MySiteTabFragment.newInstance(MySiteTabFragment.MY_SITE_TAB_TYPE_SITE_MENU)
         } else {
-            MySiteTabFragment.newInstance()
+            MySiteTabFragment.newInstance(MySiteTabFragment.MY_SITE_TAB_TYPE_DASHBOARD)
         }
     }
 }
