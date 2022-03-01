@@ -2,6 +2,7 @@ package org.wordpress.android.ui.mysite
 
 import androidx.annotation.StringRes
 import org.wordpress.android.R
+import org.wordpress.android.ui.mysite.tabs.MySiteTabViewModel
 
 sealed class SiteDialogModel(
     val tag: String,
@@ -11,8 +12,9 @@ sealed class SiteDialogModel(
     @StringRes val negativeButtonLabel: Int? = null,
     @StringRes val cancelButtonLabel: Int? = null
 ) {
+    // todo: annmarie - MSD tabs change
     object AddSiteIconDialogModel : SiteDialogModel(
-            MySiteViewModel.TAG_ADD_SITE_ICON_DIALOG,
+            MySiteTabViewModel.TAG_ADD_SITE_ICON_DIALOG,
             R.string.my_site_icon_dialog_title,
             R.string.my_site_icon_dialog_add_message,
             R.string.yes,
@@ -21,7 +23,7 @@ sealed class SiteDialogModel(
     )
 
     object ChangeSiteIconDialogModel : SiteDialogModel(
-            MySiteViewModel.TAG_CHANGE_SITE_ICON_DIALOG,
+            MySiteTabViewModel.TAG_CHANGE_SITE_ICON_DIALOG,
             R.string.my_site_icon_dialog_title,
             R.string.my_site_icon_dialog_change_message,
             R.string.my_site_icon_dialog_change_button,
@@ -30,7 +32,7 @@ sealed class SiteDialogModel(
     )
 
     object ShowRemoveNextStepsDialog : SiteDialogModel(
-            MySiteViewModel.TAG_REMOVE_NEXT_STEPS_DIALOG,
+            MySiteTabViewModel.TAG_REMOVE_NEXT_STEPS_DIALOG,
             R.string.quick_start_dialog_remove_next_steps_title,
             R.string.quick_start_dialog_remove_next_steps_message,
             R.string.remove,

@@ -22,6 +22,7 @@ import org.wordpress.android.push.NotificationsProcessingService;
 import org.wordpress.android.ui.main.WPMainActivity;
 import org.wordpress.android.ui.mysite.MySiteViewModel;
 import org.wordpress.android.ui.mysite.SelectedSiteRepository;
+import org.wordpress.android.ui.mysite.tabs.MySiteTabViewModel;
 import org.wordpress.android.ui.notifications.SystemNotificationsTracker;
 
 import javax.inject.Inject;
@@ -62,7 +63,8 @@ public class QuickStartReminderReceiver extends BroadcastReceiver {
         }
 
         Intent resultIntent = new Intent(context, WPMainActivity.class);
-        resultIntent.putExtra(MySiteViewModel.ARG_QUICK_START_TASK, true);
+        // todo: annmarie msd change
+        resultIntent.putExtra(MySiteTabViewModel.ARG_QUICK_START_TASK, true);
         NotificationType notificationType = NotificationType.QUICK_START_REMINDER;
         resultIntent.putExtra(ARG_NOTIFICATION_TYPE, notificationType);
         resultIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK

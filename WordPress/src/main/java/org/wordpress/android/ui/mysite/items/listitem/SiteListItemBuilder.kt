@@ -6,7 +6,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.ui.mysite.MySiteCardAndItem
 import org.wordpress.android.ui.mysite.MySiteCardAndItem.Item.ListItem
-import org.wordpress.android.ui.mysite.MySiteViewModel
+import org.wordpress.android.ui.mysite.tabs.MySiteTabViewModel
 import org.wordpress.android.ui.mysite.items.listitem.ListItemAction.ACTIVITY_LOG
 import org.wordpress.android.ui.mysite.items.listitem.ListItemAction.ADMIN
 import org.wordpress.android.ui.mysite.items.listitem.ListItemAction.BACKUP
@@ -199,7 +199,8 @@ class SiteListItemBuilder @Inject constructor(
                             .date
             )
             val calendar = GregorianCalendar(HIDE_WP_ADMIN_YEAR, HIDE_WP_ADMIN_MONTH, HIDE_WP_ADMIN_DAY)
-            calendar.timeZone = TimeZone.getTimeZone(MySiteViewModel.HIDE_WP_ADMIN_GMT_TIME_ZONE)
+            // todo: annmarie msd change
+            calendar.timeZone = TimeZone.getTimeZone(MySiteTabViewModel.HIDE_WP_ADMIN_GMT_TIME_ZONE)
             dateCreated == null || dateCreated.before(calendar.time)
         }
     }

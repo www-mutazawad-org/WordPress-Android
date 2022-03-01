@@ -83,9 +83,9 @@ import org.wordpress.android.ui.main.WPMainNavigationView.OnPageListener;
 import org.wordpress.android.ui.main.WPMainNavigationView.PageType;
 import org.wordpress.android.ui.mlp.ModalLayoutPickerFragment;
 import org.wordpress.android.ui.mysite.MySiteFragment;
-import org.wordpress.android.ui.mysite.MySiteViewModel;
 import org.wordpress.android.ui.mysite.SelectedSiteRepository;
 import org.wordpress.android.ui.mysite.cards.quickstart.QuickStartRepository;
+import org.wordpress.android.ui.mysite.tabs.MySiteTabViewModel;
 import org.wordpress.android.ui.notifications.NotificationEvents;
 import org.wordpress.android.ui.notifications.NotificationsListFragment;
 import org.wordpress.android.ui.notifications.SystemNotificationsTracker;
@@ -303,8 +303,9 @@ public class WPMainActivity extends LocaleAwareActivity implements
                 boolean openedFromShortcut = (getIntent() != null && getIntent().getStringExtra(
                         ShortcutsNavigator.ACTION_OPEN_SHORTCUT) != null);
                 boolean openRequestedPage = (getIntent() != null && getIntent().hasExtra(ARG_OPEN_PAGE));
+                // todo: annmarie MSD change here
                 boolean isQuickStartRequestedFromPush = (getIntent() != null && getIntent()
-                        .getBooleanExtra(MySiteViewModel.ARG_QUICK_START_TASK, false));
+                        .getBooleanExtra(MySiteTabViewModel.ARG_QUICK_START_TASK, false));
                 boolean openZendeskTicketsFromPush = (getIntent() != null && getIntent()
                         .getBooleanExtra(ARG_SHOW_ZENDESK_NOTIFICATIONS, false));
 
@@ -1555,17 +1556,19 @@ public class WPMainActivity extends LocaleAwareActivity implements
     @Override
     public void onPositiveClicked(@NonNull String instanceTag) {
         MySiteFragment mySiteFragment = getMySiteFragment();
-        if (mySiteFragment != null) {
-            mySiteFragment.onPositiveClicked(instanceTag);
-        }
+        // todo: annmarie
+//        if (mySiteFragment != null) {
+//            mySiteFragment.onPositiveClicked(instanceTag);
+//        }
     }
 
     @Override
     public void onNegativeClicked(@NonNull String instanceTag) {
         MySiteFragment mySiteFragment = getMySiteFragment();
-        if (mySiteFragment != null) {
-            mySiteFragment.onNegativeClicked(instanceTag);
-        }
+        // todo: annmarie
+//        if (mySiteFragment != null) {
+//            mySiteFragment.onNegativeClicked(instanceTag);
+//        }
     }
 
     // We dismiss the QuickStart SnackBar every time activity is paused because
