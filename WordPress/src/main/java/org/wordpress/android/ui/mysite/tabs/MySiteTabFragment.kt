@@ -91,7 +91,7 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
     private lateinit var dialogViewModel: BasicDialogViewModel
     private lateinit var dynamicCardMenuViewModel: DynamicCardMenuViewModel
     private lateinit var swipeToRefreshHelper: SwipeToRefreshHelper
-    private lateinit var tabType: String // todo: annmarie Could be an enum type
+    private lateinit var mySiteTabType: MySiteTabType
 
     private var binding: MySiteTabFragmentBinding? = null
 
@@ -131,12 +131,16 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
 
     // todo: annmarie - if we keep this, then think about instance state
     private fun initTabType() {
-        tabType = if (viewModel.isMySiteTabsEnabled) {
-            this.arguments?.getString(KEY_MY_SITE_TAB_TYPE, MY_SITE_TAB_TYPE_SITE_MENU) ?: MY_SITE_TAB_TYPE_SITE_MENU
+        mySiteTabType = if (viewModel.isMySiteTabsEnabled) {
+            MySiteTabType.fromString(
+                    this.arguments?.getString(KEY_MY_SITE_TAB_TYPE, MySiteTabType.SITE_MENU.label)
+                            ?: MySiteTabType.SITE_MENU.label
+            )
         } else {
-            MY_SITE_TAB_TYPE_EVERYTHING
+            MySiteTabType.EVERYTHING
         }
     }
+
 
     private fun MySiteTabFragmentBinding.setupContentViews(savedInstanceState: Bundle?) {
         val layoutManager = LinearLayoutManager(activity)
@@ -506,9 +510,9 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
 
     private fun MySiteTabFragmentBinding.loadData(state: State.SiteSelected) {
         recyclerView.setVisible(true)
-        val cardAndItems = when (tabType) {
-            MY_SITE_TAB_TYPE_SITE_MENU -> state.siteMenuCardsAndItems
-            MY_SITE_TAB_TYPE_DASHBOARD -> state.dashboardCardsAndItems
+        val cardAndItems = when (mySiteTabType) {
+            MySiteTabType.SITE_MENU -> state.siteMenuCardsAndItems
+            MySiteTabType.DASHBOARD -> state.dashboardCardsAndItems
             else -> state.cardAndItems
         }
         (recyclerView.adapter as? MySiteAdapter)?.loadData(cardAndItems)
@@ -552,17 +556,12 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         private const val KEY_LIST_STATE = "key_list_state"
         private const val KEY_NESTED_LISTS_STATES = "key_nested_lists_states"
         private const val TAG_QUICK_START_DIALOG = "TAG_QUICK_START_DIALOG"
-
         private const val KEY_MY_SITE_TAB_TYPE = "key_my_site_tab_type"
-        const val MY_SITE_TAB_TYPE_DASHBOARD = "my_site_tab_type_dashboard"
-        const val MY_SITE_TAB_TYPE_SITE_MENU = "my_site_tab_type_site_menu"
-        const val MY_SITE_TAB_TYPE_EVERYTHING = "my_site_tab_type_everything"
 
-        // todo: annmarie - perhaps use an enum value ?
         @JvmStatic
-        fun newInstance(tabType: String) = MySiteTabFragment().apply {
+        fun newInstance(mySiteTabType: MySiteTabType) = MySiteTabFragment().apply {
             arguments = Bundle().apply {
-                putString(KEY_MY_SITE_TAB_TYPE, tabType)
+                putString(KEY_MY_SITE_TAB_TYPE, mySiteTabType.label)
             }
         }
     }
