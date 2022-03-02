@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.core.util.Consumer;
 import androidx.core.util.Pair;
 import androidx.fragment.app.Fragment;
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment;
 import org.wordpress.android.editor.BuildConfig;
 import org.wordpress.android.editor.ExceptionLogger;
 import org.wordpress.android.editor.R;
+import org.wordpress.mobile.WPAndroidGlue.SelectedMedia;
 import org.wordpress.mobile.WPAndroidGlue.ShowSuggestionsUtil;
 import org.wordpress.mobile.WPAndroidGlue.GutenbergProps;
 import org.wordpress.mobile.WPAndroidGlue.RequestExecutor;
@@ -107,11 +109,18 @@ public class GutenbergContainerFragment extends Fragment {
                     isDarkMode);
     }
 
+    private static final String SELECTED_MEDIA_KEY = "selected_media";
+    private SelectedMedia mSelectedMedia;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         GutenbergPropsBuilder gutenbergPropsBuilder = getArguments().getParcelable(ARG_GUTENBERG_PROPS_BUILDER);
+
+        mSelectedMedia = savedInstanceState != null && savedInstanceState.containsKey(SELECTED_MEDIA_KEY)
+                ? savedInstanceState.getParcelable(SELECTED_MEDIA_KEY)
+                : new SelectedMedia();
 
         Consumer<Exception> exceptionLogger = null;
         Consumer<String> breadcrumbLogger = null;
@@ -121,8 +130,9 @@ public class GutenbergContainerFragment extends Fragment {
             breadcrumbLogger = exceptionLoggingActivity.getBreadcrumbLogger();
         }
 
+        // FIXME combine WPAndroid(), onCreate(...) and onCreateView(...) to one call???
         mWPAndroidGlueCode = new WPAndroidGlueCode();
-        mWPAndroidGlueCode.onCreate(getContext());
+        mWPAndroidGlueCode.onCreate(getContext(), mSelectedMedia);
         mWPAndroidGlueCode.onCreateView(
                 getContext(),
                 getActivity().getApplication(),
@@ -134,6 +144,11 @@ public class GutenbergContainerFragment extends Fragment {
 
         // clear the content initialization flag since a new ReactRootView has been created;
         mHasReceivedAnyContent = false;
+    }
+
+    @Override public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(SELECTED_MEDIA_KEY, mSelectedMedia);
     }
 
     @Override

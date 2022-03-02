@@ -298,6 +298,7 @@ public class EditPostActivity extends LocaleAwareActivity implements
     private static final String STATE_KEY_REVISION = "stateKeyRevision";
     private static final String STATE_KEY_EDITOR_SESSION_DATA = "stateKeyEditorSessionData";
     private static final String STATE_KEY_GUTENBERG_IS_SHOWN = "stateKeyGutenbergIsShown";
+    private static final String STATE_KEY_MEDIA_CAPTURE_PATH = "stateKeyMediaCapturePath";
 
     private static final int PAGE_CONTENT = 0;
     private static final int PAGE_SETTINGS = 1;
@@ -640,6 +641,7 @@ public class EditPostActivity extends LocaleAwareActivity implements
             mRevision = savedInstanceState.getParcelable(STATE_KEY_REVISION);
             mPostEditorAnalyticsSession = PostEditorAnalyticsSession
                     .fromBundle(savedInstanceState, STATE_KEY_EDITOR_SESSION_DATA, mAnalyticsTrackerWrapper);
+            mMediaCapturePath = savedInstanceState.getString(STATE_KEY_MEDIA_CAPTURE_PATH);
 
             // if we have a remote id saved, let's first try that, as the local Id might have changed after FETCH_POSTS
             if (savedInstanceState.containsKey(STATE_KEY_POST_REMOTE_ID)) {
@@ -1042,6 +1044,7 @@ public class EditPostActivity extends LocaleAwareActivity implements
 
         outState.putBoolean(STATE_KEY_GUTENBERG_IS_SHOWN, mShowGutenbergEditor);
 
+        outState.putString(STATE_KEY_MEDIA_CAPTURE_PATH, mMediaCapturePath);
         outState.putParcelableArrayList(STATE_KEY_DROPPED_MEDIA_URIS, mEditorMedia.getDroppedMediaUris());
 
         if (mEditorFragment != null) {
