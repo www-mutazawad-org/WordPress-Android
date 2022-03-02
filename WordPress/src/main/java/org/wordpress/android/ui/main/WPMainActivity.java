@@ -1555,17 +1555,19 @@ public class WPMainActivity extends LocaleAwareActivity implements
     @Override
     public void onPositiveClicked(@NonNull String instanceTag) {
         MySiteFragment mySiteFragment = getMySiteFragment();
-        if (mySiteFragment != null) {
-            mySiteFragment.onPositiveClicked(instanceTag);
-        }
+        // todo: annmarie
+//        if (mySiteFragment != null) {
+//            mySiteFragment.onPositiveClicked(instanceTag);
+//        }
     }
 
     @Override
     public void onNegativeClicked(@NonNull String instanceTag) {
         MySiteFragment mySiteFragment = getMySiteFragment();
-        if (mySiteFragment != null) {
-            mySiteFragment.onNegativeClicked(instanceTag);
-        }
+        // todo: annmarie
+//        if (mySiteFragment != null) {
+//            mySiteFragment.onNegativeClicked(instanceTag);
+//        }
     }
 
     // We dismiss the QuickStart SnackBar every time activity is paused because
