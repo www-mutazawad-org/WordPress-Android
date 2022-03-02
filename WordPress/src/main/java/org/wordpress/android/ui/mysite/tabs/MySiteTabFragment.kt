@@ -111,6 +111,14 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         (requireActivity().application as WordPress).component().inject(this)
     }
 
+    private fun initViewModels() {
+        viewModel = ViewModelProvider(requireParentFragment(), viewModelFactory).get(MySiteViewModel::class.java)
+        dialogViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(BasicDialogViewModel::class.java)
+        dynamicCardMenuViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
+                .get(DynamicCardMenuViewModel::class.java)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initTabType()
@@ -128,14 +136,6 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         } else {
             MY_SITE_TAB_TYPE_EVERYTHING
         }
-    }
-
-    private fun initViewModels() {
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MySiteViewModel::class.java)
-        dialogViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
-                .get(BasicDialogViewModel::class.java)
-        dynamicCardMenuViewModel = ViewModelProvider(requireActivity(), viewModelFactory)
-                .get(DynamicCardMenuViewModel::class.java)
     }
 
     private fun MySiteTabFragmentBinding.setupContentViews(savedInstanceState: Bundle?) {
@@ -233,7 +233,7 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
     }
 
     @Suppress("ComplexMethod", "LongMethod")
-    private fun handleNavigationAction(action: SiteNavigationAction) = when (action) {
+    fun handleNavigationAction(action: SiteNavigationAction) = when (action) {
         is SiteNavigationAction.OpenMeScreen -> ActivityLauncher.viewMeActivityForResult(activity)
         is SiteNavigationAction.OpenSitePicker -> ActivityLauncher.showSitePickerForResult(activity, action.site)
         is SiteNavigationAction.OpenSite -> ActivityLauncher.viewCurrentSite(activity, action.site, true)

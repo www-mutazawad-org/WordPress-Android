@@ -161,7 +161,8 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
         is SiteNavigationAction.OpenMeScreen -> ActivityLauncher.viewMeActivityForResult(activity)
         is SiteNavigationAction.AddNewSite -> SitePickerActivity.addSite(activity, action.hasAccessToken)
         else -> {
-            // Ignore any other navigation events
+            // Pass all other navigationAction on to the child fragment, so they can be handled properly
+            binding?.viewPager?.getViewPagerFragment()?.handleNavigationAction(action)
         }
     }
 
