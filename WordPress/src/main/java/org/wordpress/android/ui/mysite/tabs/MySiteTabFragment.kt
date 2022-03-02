@@ -91,6 +91,7 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
     private lateinit var dialogViewModel: BasicDialogViewModel
     private lateinit var dynamicCardMenuViewModel: DynamicCardMenuViewModel
     private lateinit var swipeToRefreshHelper: SwipeToRefreshHelper
+    private lateinit var tabType: String // todo: annmarie Could be an enum type
 
     private var binding: MySiteTabFragmentBinding? = null
 
@@ -120,16 +121,13 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         }
     }
 
-    private lateinit var tabType: String
+    // todo: annmarie - if we keep this, then think about instance state
     private fun initTabType() {
-        // todo: annmarie - if we go this route, then we might want to think about instanceState
         tabType = if (viewModel.isMySiteTabsEnabled) {
             this.arguments?.getString(KEY_MY_SITE_TAB_TYPE, MY_SITE_TAB_TYPE_SITE_MENU) ?: MY_SITE_TAB_TYPE_SITE_MENU
         } else {
             MY_SITE_TAB_TYPE_EVERYTHING
         }
-        // todo: annmarie - This will not work when we are sharing the view model
-        viewModel.setTabType(tabType)
     }
 
     private fun initViewModels() {
@@ -508,7 +506,12 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
 
     private fun MySiteTabFragmentBinding.loadData(state: State.SiteSelected) {
         recyclerView.setVisible(true)
-        (recyclerView.adapter as? MySiteAdapter)?.loadData(state.cardAndItems)
+        val cardAndItems = when (tabType) {
+            MY_SITE_TAB_TYPE_SITE_MENU -> state.siteMenuCardsAndItems
+            MY_SITE_TAB_TYPE_DASHBOARD -> state.dashboardCardsAndItems
+            else -> state.cardAndItems
+        }
+        (recyclerView.adapter as? MySiteAdapter)?.loadData(cardAndItems)
     }
 
     private fun MySiteTabFragmentBinding.loadEmptyView() {
