@@ -1,5 +1,6 @@
 package org.wordpress.android.ui.mysite
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
@@ -165,15 +166,20 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
     }
 
     override fun onPositiveClicked(instanceTag: String) {
-        binding?.viewPager?.getViewPagerCurrentFragment()?.onNegativeClicked(instanceTag)
+        binding?.viewPager?.getViewPagerFragment()?.onPositiveClicked(instanceTag)
     }
 
     override fun onNegativeClicked(instanceTag: String) {
-        binding?.viewPager?.getViewPagerCurrentFragment()?.onNegativeClicked(instanceTag)
+        binding?.viewPager?.getViewPagerFragment()?.onNegativeClicked(instanceTag)
     }
 
-    private fun ViewPager2.getViewPagerCurrentFragment() =
-            (activity?.supportFragmentManager?.fragments?.get(currentItem) as? MySiteTabFragment)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        binding?.viewPager?.getViewPagerFragment()?.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun ViewPager2.getViewPagerFragment() =
+            (this.adapter as MySiteTabsAdapter).getFragment(0) as MySiteTabFragment
 
     override fun onDestroyView() {
         super.onDestroyView()
