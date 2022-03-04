@@ -141,7 +141,6 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         }
     }
 
-
     private fun MySiteTabFragmentBinding.setupContentViews(savedInstanceState: Bundle?) {
         val layoutManager = LinearLayoutManager(activity)
 
@@ -591,4 +590,3 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         viewModel.onQuickStartFullScreenDialogDismiss()
     }
 }
-
