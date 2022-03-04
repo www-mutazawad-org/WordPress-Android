@@ -158,25 +158,25 @@ class MySiteFragment : Fragment(R.layout.my_site_fragment),
         is SiteNavigationAction.AddNewSite -> SitePickerActivity.addSite(activity, action.hasAccessToken)
         else -> {
             // Pass all other navigationAction on to the child fragment, so they can be handled properly
-            binding?.viewPager?.getViewPagerFragment()?.handleNavigationAction(action)
+            binding?.viewPager?.getCurrentFragment()?.handleNavigationAction(action)
         }
     }
 
     override fun onPositiveClicked(instanceTag: String) {
-        binding?.viewPager?.getViewPagerFragment()?.onPositiveClicked(instanceTag)
+        binding?.viewPager?.getCurrentFragment()?.onPositiveClicked(instanceTag)
     }
 
     override fun onNegativeClicked(instanceTag: String) {
-        binding?.viewPager?.getViewPagerFragment()?.onNegativeClicked(instanceTag)
+        binding?.viewPager?.getCurrentFragment()?.onNegativeClicked(instanceTag)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        binding?.viewPager?.getViewPagerFragment()?.onActivityResult(requestCode, resultCode, data)
+        binding?.viewPager?.getCurrentFragment()?.onActivityResult(requestCode, resultCode, data)
     }
 
-    private fun ViewPager2.getViewPagerFragment() =
-            (this.adapter as MySiteTabsAdapter).getFragment(0) as MySiteTabFragment
+    private fun ViewPager2.getCurrentFragment() =
+            this@MySiteFragment.childFragmentManager.findFragmentByTag("f$currentItem") as? MySiteTabFragment
 
     override fun onDestroyView() {
         super.onDestroyView()
