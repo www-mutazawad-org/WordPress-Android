@@ -1,5 +1,7 @@
 buildscript {
     ext.aztecVersion = 'v1.5.4'
+
+    ext.excludeAppGlideModule = true
 }
 
 repositories {

@@ -40,12 +40,16 @@ ext {
     espressoVersion = '3.1.0'
     mockitoCoreVersion = "3.3.3"
     nhaarmanMockitoVersion = "2.2.0"
+
+    excludeAppGlideModule = true
 }
 
 buildscript {
     ext.kotlinVersion = '1.5.32'
     ext.navComponentVersion = '2.3.5'
     ext.detektVersion = '1.15.0'
+
+    ext.excludeAppGlideModule = true
 
     repositories {
         maven {
