@@ -279,8 +279,8 @@ platform :android do
   MAIN_STRINGS_PATH = './WordPress/src/main/res/values/strings.xml'.freeze
   FROZEN_STRINGS_DIR_PATH = './fastlane/resources/values/'.freeze
   LOCAL_LIBRARIES_STRINGS_PATHS = [
-    { library: "Image Editor", strings_path: "./libs/image-editor/ImageEditor/src/main/res/values/strings.xml", exclusions: [] },
-    { library: "WordPress Editor", strings_path: "./libs/editor/WordPressEditor/src/main/res/values/strings.xml", exclusions: [] }
+    { library: "Image Editor", strings_path: "./libs/image-editor/ImageEditor/src/main/res/values/strings.xml", source_id: 'image-editor' },
+    { library: "WordPress Editor", strings_path: "./libs/editor/WordPressEditor/src/main/res/values/strings.xml", source_id: 'editor' }
   ].freeze
   REMOTE_LIBRARIES_STRINGS_PATHS = [
     {
@@ -355,7 +355,8 @@ platform :android do
         lib_to_merge = [{
           library: lib[:name],
           strings_path: download_path,
-          exclusions: lib[:exclusions]
+          exclusions: lib[:exclusions],
+          source_id: lib[:source_id] || File.basename(lib[:repository]).downcase.delete_suffix('-android')
         }]
         an_localize_libs(app_strings_path: MAIN_STRINGS_PATH, libs_strings_path: lib_to_merge)
         File.delete(download_path) if File.exist?(download_path)
