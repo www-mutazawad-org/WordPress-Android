@@ -2150,7 +2150,7 @@
     <string name="auth_required" tools:ignore="UnusedResources" a8c-src-lib="wordpress-login-flow">Log in again to continue.</string>
     <string name="logging_in">Logging in</string>
     <string name="reset_your_password" tools:ignore="UnusedResources" a8c-src-lib="wordpress-login-flow">Reset your password</string>
-    <string name="magic_link_unavailable_error_message" tools:ignore="UnusedResources" a8c-src-lib="wordpress-login-flow">CHANGE FOR TEST PURPOSES</string>
+    <string name="magic_link_unavailable_error_message" tools:ignore="UnusedResources" a8c-src-lib="wordpress-login-flow">Currently unavailable. Please enter your password</string>
     <string name="checking_email" tools:ignore="UnusedResources" a8c-src-lib="wordpress-login-flow">Checking email</string>
     <string name="already_logged_in_wpcom">You\'re already logged in a WordPress.com account, you can\'t add a WordPress.com site bound to another account.</string>
     <string name="cannot_add_duplicate_site" tools:ignore="UnusedResources" a8c-src-lib="wordpress-login-flow">This site already exists in the app, you can\'t add it.</string>
@@ -3779,13 +3779,13 @@ translators: %s: Select control option value e.g: "Auto, 25%". -->
     <string name="gutenberg_native_you_can_edit_this_block_using_the_web_version_of_the_editor" tools:ignore="UnusedResources">You can edit this block using the web version of the editor.</string>
     <string name="gutenberg_native_you_can_rearrange_blocks_by_tapping_a_block_and_then_tapping_the" tools:ignore="UnusedResources">You can rearrange blocks by tapping a block and then tapping the up and down arrows that appear on the bottom left side of the block to move it above or below other blocks.</string>
 
-    <string name="toast_capture_operation_permission_needed" tools:ignore="UnusedResources" a8c-src-lib="stories">CHANGDE FOR TESTING PURPOSES</string>
+    <string name="toast_capture_operation_permission_needed" tools:ignore="UnusedResources" a8c-src-lib="stories">You need to grant the app audio recording permission in order to record video</string>
     <string name="typeface_label_nunito" tools:ignore="UnusedResources" a8c-src-lib="stories">Casual</string>
     <string name="typeface_label_libre_baskerville" tools:ignore="UnusedResources" a8c-src-lib="stories">Classic</string>
     <string name="typeface_label_oswald" tools:ignore="UnusedResources" a8c-src-lib="stories">Strong</string>
-    <string name="typeface_label_pacifico" tools:ignore="UnusedResources">Playful</string>
-    <string name="typeface_label_space_mono" tools:ignore="UnusedResources">Modern</string>
-    <string name="typeface_label_shrikhand" tools:ignore="UnusedResources">Bold</string>
+    <string name="typeface_label_pacifico" tools:ignore="UnusedResources" a8c-src-lib="stories">Playful</string>
+    <string name="typeface_label_space_mono" tools:ignore="UnusedResources" a8c-src-lib="stories">Modern</string>
+    <string name="typeface_label_shrikhand" tools:ignore="UnusedResources" a8c-src-lib="stories">Bold</string>
     <string name="delete_button_alt" tools:ignore="UnusedResources" a8c-src-lib="stories">Delete</string>
     <string name="label_next_button" tools:ignore="UnusedResources" a8c-src-lib="stories">Next</string>
     <string name="label_done_button">Done</string>
@@ -3970,8 +3970,8 @@ translators: %s: Select control option value e.g: "Auto, 25%". -->
 
     <!-- About -->
     <string name="about_blog">Blog</string>
-    <string name="about_automattic_main_page_title" tools:ignore="UnusedResources" a8c-src-lib="CHANGE-FOR-TESTING">About %1$s</string>
-    <string name="about_automattic_legal_page_title" tools:ignore="UnusedResources" a8c-src-lib="CHANGE-FOR-TESTING">Legal and More</string>
+    <string name="about_automattic_main_page_title" tools:ignore="UnusedResources" a8c-src-lib="about-automattic">About %1$s</string>
+    <string name="about_automattic_legal_page_title" tools:ignore="UnusedResources" a8c-src-lib="about-automattic">Legal and More</string>
     <string name="about_automattic_acknowledgements_page_title" tools:ignore="UnusedResources" a8c-src-lib="about-automattic">Acknowledgements</string>
     <string name="about_automattic_version_label" tools:ignore="UnusedResources" a8c-src-lib="about-automattic">Version %1$s</string>
     <string name="about_automattic_share_with_friends_item_title" tools:ignore="UnusedResources" a8c-src-lib="about-automattic">Share with Friends</string>
@@ -4066,4 +4066,19 @@ translators: %s: Select control option value e.g: "Auto, 25%". -->
     <string name="long_post_dlg_saving">Saving</string>
     <string name="notification_channel_important_id" translatable="false" tools:ignore="UnusedResources">wpandroid_notification_important_channel_id</string>
     <string name="notification_channel_reminder_id" translatable="false" tools:ignore="UnusedResources">wpandroid_notification_reminder_channel_id</string>
+    <string name="menu_toolbar_title" a8c-src-lib="editor">Edit %s block</string>
+    <string name="pref_key_seen_classic_editor_deprecation_notice" translatable="false" a8c-src-lib="editor">wp_pref_seen_classic_editor_deprecation_notice</string>
+    <string name="dialog_title_try_block_editor" translatable="true" a8c-src-lib="editor">Try the new Block Editor</string>
+    <string name="dialog_body_try_block_editor" translatable="true" a8c-src-lib="editor">We’ll be removing the classic editor for new posts soon, but this won’t affect editing any of your existing posts or pages. Get a head start by enabling the Block Editor now in site settings.</string>
+    <string name="dialog_dismiss_try_block_editor" translatable="true" a8c-src-lib="editor">Dismiss</string>
+    <string name="featured_image_replace_dialog_title" a8c-src-lib="editor">Replace current featured image?</string>
+    <string name="featured_image_replace_dialog_description" a8c-src-lib="editor">You already have a featured image set. Do you want to replace it with the new image?</string>
+    <string name="featured_image_replace_dialog_confirm" a8c-src-lib="editor">Replace featured image</string>
+    <string name="featured_image_replace_dialog_cancel" a8c-src-lib="editor">Keep current</string>
+    <string name="featured_image_confirmation_notice" a8c-src-lib="editor">Set as featured image</string>
+    <string name="featured_image_removed_notice" a8c-src-lib="editor">Removed as featured image</string>
+    <string name="notification_channel_general_title" tools:ignore="UnusedResources" a8c-src-lib="stories">General</string>
+    <string name="notification_channel_important_title" tools:ignore="UnusedResources" a8c-src-lib="stories">Important</string>
+    <string name="notification_channel_transient_title" tools:ignore="UnusedResources" a8c-src-lib="stories">Transient</string>
+    <string name="notification_channel_reminder_title" tools:ignore="UnusedResources" a8c-src-lib="stories">Reminder</string>
 </resources>
