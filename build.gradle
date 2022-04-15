@@ -1,3 +1,5 @@
+import com.android.build.gradle.api.AndroidBasePlugin
+
 buildscript {
     ext.kotlinVersion = '1.6.10'
     ext.navComponentVersion = '2.3.5'
@@ -23,6 +25,10 @@ buildscript {
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$navComponentVersion"
         classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:$detektVersion"
     }
+}
+
+plugins {
+    id "org.gradle.android.cache-fix" version "2.5.0" apply false
 }
 
 apply plugin: 'com.automattic.android.fetchstyle'
@@ -144,6 +150,9 @@ allprojects {
 }
 
 subprojects {
+    plugins.withType(AndroidBasePlugin) {
+        project.apply plugin: "org.gradle.android.cache-fix"
+    }
 
     configurations {
         ktlint
