@@ -2,8 +2,12 @@ docker-container: &docker-container
   plugins:
     - docker#v3.8.0:
         image: "public.ecr.aws/automattic/android-build-image:v1.2.0"
+        propagate-environment: true
         environment:
-          - "CI=true"
+          # DO NOT MANUALLY SET THESE VALUES!
+          # They are passed from the Buildkite agent to the Docker container
+          - "GRADLE_ENTERPRISE_BUILD_CACHE_USERNAME"
+          - "GRADLE_ENTERPRISE_BUILD_CACHE_PASSWORD"
 
 steps:
   - label: "assemble"

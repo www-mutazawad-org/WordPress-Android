@@ -21,6 +21,10 @@ if (System.getenv().containsKey("CI")) {
             push = true
             enabled = true
             url = "https://gradle.a8c.com/cache/"
+            credentials {
+                username = System.getenv("GRADLE_ENTERPRISE_BUILD_CACHE_USERNAME")
+                password = System.getenv("GRADLE_ENTERPRISE_BUILD_CACHE_PASSWORD")
+            }
         }
     }
 }
