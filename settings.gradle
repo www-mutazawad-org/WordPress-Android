@@ -20,7 +20,7 @@ if (System.getenv().containsKey("CI")) {
         remote(HttpBuildCache) {
             push = true
             enabled = true
-            url = "https://ge.a8c.com/cache/"
+            url = "https://gradle.a8c.com/cache/"
         }
     }
 }
