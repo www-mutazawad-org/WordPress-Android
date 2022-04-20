@@ -13,4 +13,4 @@ steps:
   - label: "assemble"
     <<: *docker-container
     command: |
-      ./gradlew clean assembleWordpressWasabiDebug -Dscan.tag.exp4
+      ./gradlew clean assembleWordpressWasabiDebug -Dscan.tag.experiment4
