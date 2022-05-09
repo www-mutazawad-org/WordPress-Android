@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import androidx.core.view.isGone
 import androidx.core.view.isInvisible
@@ -11,6 +13,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.AppBarLayout
 import org.wordpress.android.R
 import org.wordpress.android.WordPress
@@ -143,10 +146,17 @@ class HomePagePickerFragment : Fragment() {
         homePagePickerTitlebar.skipButton.setOnClickListener { viewModel.onSkippedTapped() }
         errorView.button.setOnClickListener { viewModel.onRetryClicked() }
         homePagePickerTitlebar.backButton.setOnClickListener { viewModel.onBackPressed() }
-        setScrollListener()
+        setScrollListeners()
     }
 
-    private fun HomePagePickerFragmentBinding.setScrollListener() {
+    private fun HomePagePickerFragmentBinding.setScrollListeners() {
+        // Only display the bottom helper text when we reach the bottom
+        layoutsRecyclerView.addOnScrollListener(object: RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                bottomHelperText.visibility = if (layoutsRecyclerView.canScrollVertically(1)) GONE
+                else VISIBLE
+            }
+        })
         if (displayUtils.isPhoneLandscape()) return // Always visible
         val scrollThreshold = resources.getDimension(R.dimen.picker_header_scroll_snap_threshold).toInt()
         appBarLayout.addOnOffsetChangedListener(AppBarLayout.OnOffsetChangedListener { _, verticalOffset ->

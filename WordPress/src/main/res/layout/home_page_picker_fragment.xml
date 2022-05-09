@@ -94,6 +94,17 @@
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
+    <TextView
+        android:id="@+id/bottom_helper_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/hpp_bottom_helper_text"
+        android:layout_gravity="bottom"
+        style="@style/ModalLayoutPickerSubtitle"
+        android:visibility="gone"
+        android:drawableLeft="@drawable/ic_info_outline_grey_dark_18dp" />
+
     <org.wordpress.android.ui.ActionableEmptyView
         android:id="@+id/errorView"
         android:layout_width="match_parent"
