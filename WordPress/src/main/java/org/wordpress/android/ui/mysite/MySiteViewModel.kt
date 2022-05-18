@@ -1020,11 +1020,13 @@ class MySiteViewModel @Inject constructor(
         return fluxCUtilsWrapper.mediaModelFromLocalUri(uri, mimeType, site.id)
     }
 
+    // todo: annmarie
     private fun getStatsNavigationActionForSite(site: SiteModel) = when {
         // If the user is not logged in and the site is already connected to Jetpack, ask to login.
         !accountStore.hasAccessToken() && site.isJetpackConnected -> SiteNavigationAction.StartWPComLoginForJetpackStats
 
         // If it's a WordPress.com or Jetpack site, show the Stats screen.
+        // todo: add check for Jetpack site
         site.isWPCom || site.isJetpackInstalled && site.isJetpackConnected -> SiteNavigationAction.OpenStats(site)
 
         // If it's a self-hosted site, ask to connect to Jetpack.

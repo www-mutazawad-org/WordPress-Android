@@ -11,12 +11,14 @@ import org.wordpress.android.ui.deeplinks.DeepLinkingIntentReceiverViewModel.Com
 import org.wordpress.android.ui.deeplinks.DeepLinkingIntentReceiverViewModel.Companion.HOST_WORDPRESS_COM
 import org.wordpress.android.ui.deeplinks.DeepLinkingIntentReceiverViewModel.Companion.SITE_DOMAIN
 import org.wordpress.android.ui.stats.StatsTimeframe
+import org.wordpress.android.util.BuildConfigWrapper
 import org.wordpress.android.util.UriWrapper
 import javax.inject.Inject
 
 class StatsLinkHandler
 @Inject constructor(
-    private val deepLinkUriUtils: DeepLinkUriUtils
+    private val deepLinkUriUtils: DeepLinkUriUtils,
+    private val buildConfig: BuildConfigWrapper
 ) : DeepLinkHandler {
     /**
      * Builds navigate action from URL like:
@@ -52,17 +54,30 @@ class StatsLinkHandler
      * The handled links are `https://wordpress.com/stats/day/$site` and `wordpress://stats`
      */
     override fun shouldHandleUrl(uri: UriWrapper): Boolean {
-        return (uri.host == HOST_WORDPRESS_COM &&
-                uri.pathSegments.firstOrNull() == STATS_PATH) || uri.host == STATS_PATH
+        if (buildConfig.isJetpackApp && (uri.toString().contains("stats"))) {
+            return true
+        } else {
+            return (uri.host == HOST_WORDPRESS_COM &&
+                    uri.pathSegments.firstOrNull() == STATS_PATH) || uri.host == STATS_PATH
+        }
     }
 
     override fun stripUrl(uri: UriWrapper): String {
+        // todo: annmarie = check if this is jetpack app
         return buildString {
             val offset = if (uri.host == STATS_PATH) {
-                append(APPLINK_SCHEME)
+                if (buildConfig.isJetpackApp) {
+                    "jetpack://${STATS_PATH}"
+                } else {
+                    append(APPLINK_SCHEME)
+                }
                 0
             } else {
-                append("$HOST_WORDPRESS_COM/")
+                if (buildConfig.isJetpackApp) {
+                    append("jetpack.com/")
+                } else {
+                    append("$HOST_WORDPRESS_COM/")
+                }
                 1
             }
             append(STATS_PATH)

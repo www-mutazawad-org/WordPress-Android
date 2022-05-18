@@ -14,6 +14,7 @@ import org.wordpress.android.ui.deeplinks.DeepLinkingIntentReceiverViewModel.Com
 import org.wordpress.android.ui.deeplinks.DeepLinkingIntentReceiverViewModel.Companion.SITE_DOMAIN
 import org.wordpress.android.ui.reader.ReaderConstants
 import org.wordpress.android.ui.utils.IntentUtils
+import org.wordpress.android.util.BuildConfigWrapper
 import org.wordpress.android.util.UriWrapper
 import org.wordpress.android.util.analytics.AnalyticsUtilsWrapper
 import org.wordpress.android.viewmodel.Event
@@ -23,7 +24,8 @@ import javax.inject.Inject
 class ReaderLinkHandler
 @Inject constructor(
     private val intentUtils: IntentUtils,
-    private val analyticsUtilsWrapper: AnalyticsUtilsWrapper
+    private val analyticsUtilsWrapper: AnalyticsUtilsWrapper,
+    private val buildConfig: BuildConfigWrapper
 ) : DeepLinkHandler {
     private val _toast = MutableLiveData<Event<Int>>()
     val toast = _toast as LiveData<Event<Int>>
@@ -37,10 +39,14 @@ class ReaderLinkHandler
      * `wordpress://viewpost?blogId={blogId}&postId={postId}`
      */
     override fun shouldHandleUrl(uri: UriWrapper): Boolean {
-        return DEEP_LINK_HOST_READ == uri.host || DEEP_LINK_HOST_VIEWPOST == uri.host || intentUtils.canResolveWith(
-                ReaderConstants.ACTION_VIEW_POST,
-                uri
-        )
+        if (buildConfig.isJetpackApp && (uri.toString().contains("read"))) {
+            return true
+        } else {
+            return DEEP_LINK_HOST_READ == uri.host || DEEP_LINK_HOST_VIEWPOST == uri.host || intentUtils.canResolveWith(
+                    ReaderConstants.ACTION_VIEW_POST,
+                    uri
+            )
+        }
     }
 
     override fun buildNavigateAction(uri: UriWrapper): NavigateAction {
@@ -71,8 +77,15 @@ class ReaderLinkHandler
      * domain.wordpress.com/19../../../postId
      */
     override fun stripUrl(uri: UriWrapper): String {
+        // todo: annmarie = check if this is jetpack app
         return when (uri.host) {
-            DEEP_LINK_HOST_READ -> "$APPLINK_SCHEME$DEEP_LINK_HOST_READ"
+            DEEP_LINK_HOST_READ -> {
+                if (buildConfig.isJetpackApp) {
+                    "jetpack://$DEEP_LINK_HOST_READ"
+                } else {
+                    "$APPLINK_SCHEME$DEEP_LINK_HOST_READ"
+                }
+            }
             DEEP_LINK_HOST_VIEWPOST -> {
                 val hasBlogId = uri.getQueryParameter(BLOG_ID) != null
                 val hasPostId = uri.getQueryParameter(POST_ID) != null

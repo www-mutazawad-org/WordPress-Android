@@ -2,6 +2,7 @@ package org.wordpress.android.ui.mysite.tabs
 
 import android.app.Activity
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
@@ -63,6 +64,7 @@ import org.wordpress.android.ui.utils.UiString.UiStringText
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T.MAIN
 import org.wordpress.android.util.AppLog.T.UTILS
+import org.wordpress.android.util.BuildConfigWrapper
 import org.wordpress.android.util.NetworkUtils
 import org.wordpress.android.util.QuickStartUtilsWrapper
 import org.wordpress.android.util.SnackbarItem
@@ -93,6 +95,7 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
     @Inject lateinit var uploadUtilsWrapper: UploadUtilsWrapper
     @Inject lateinit var quickStartUtils: QuickStartUtilsWrapper
     @Inject lateinit var quickStartTracker: QuickStartTracker
+    @Inject lateinit var buildConfigWrapper: BuildConfigWrapper
     private lateinit var viewModel: MySiteViewModel
     private lateinit var dialogViewModel: BasicDialogViewModel
     private lateinit var dynamicCardMenuViewModel: DynamicCardMenuViewModel
@@ -279,7 +282,20 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         is SiteNavigationAction.OpenPlugins -> ActivityLauncher.viewPluginBrowser(activity, action.site)
         is SiteNavigationAction.OpenMedia -> ActivityLauncher.viewCurrentBlogMedia(activity, action.site)
         is SiteNavigationAction.OpenUnifiedComments -> ActivityLauncher.viewUnifiedComments(activity, action.site)
-        is SiteNavigationAction.OpenStats -> ActivityLauncher.viewBlogStats(activity, action.site)
+        is SiteNavigationAction.OpenStats -> {
+
+            // todo: annmarie switch over to Jetpack
+            if (!buildConfigWrapper.isJetpackApp) {
+                val pm: PackageManager = requireActivity().packageManager
+                val intent = pm.getLaunchIntentForPackage("com.jetpack.android.prealpha")
+                val uri = Uri.parse("jetpack://stats")
+                intent!!.data = uri
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+            } else {
+                ActivityLauncher.viewBlogStats(activity, action.site)
+            }
+        }
         is SiteNavigationAction.ConnectJetpackForStats ->
             ActivityLauncher.viewConnectJetpackForStats(activity, action.site)
         is SiteNavigationAction.StartWPComLoginForJetpackStats ->

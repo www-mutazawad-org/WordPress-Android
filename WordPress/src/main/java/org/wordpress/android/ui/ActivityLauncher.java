@@ -1705,4 +1705,12 @@ public class ActivityLauncher {
     public static void viewDebugCookies(@NonNull Context context) {
         context.startActivity(new Intent(context, DebugCookiesActivity.class));
     }
+
+//    public static void startJetpackReader(@NonNull Context context, Intent intent, @NonNull String feature) {
+////        Uri uri = Uri.parse("jetpack://" + feature);
+////        Intent intent = new Intent(Intent.ACTION_VIEW);
+////        intent.setData(uri);
+////        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+////        context.startActivity(intent);
+//    }
 }

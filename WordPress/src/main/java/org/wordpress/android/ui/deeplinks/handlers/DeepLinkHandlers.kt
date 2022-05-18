@@ -45,6 +45,7 @@ class DeepLinkHandlers
     }
 
     fun stripUrl(uri: UriWrapper): String? {
-        return handlers.firstOrNull { it.shouldHandleUrl(uri) }?.stripUrl(uri)
+        return handlers.firstOrNull {
+            it.shouldHandleUrl(uri) }?.stripUrl(uri)
     }
 }

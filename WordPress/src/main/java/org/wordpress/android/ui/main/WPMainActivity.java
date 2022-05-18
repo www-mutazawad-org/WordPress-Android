@@ -967,12 +967,31 @@ public class WPMainActivity extends LocaleAwareActivity implements
             QuickStartTask followSiteTask = mQuickStartRepository
                     .getQuickStartType().getTaskFromString(QuickStartStore.QUICK_START_FOLLOW_SITE_LABEL);
             mQuickStartRepository.requestNextStepOfTask(followSiteTask);
+
+            // todo: annmarie switch over to Jetpack
+            if (!mBuildConfigWrapper.isJetpackApp()) {
+                PackageManager pm = getPackageManager();
+                Intent intent = pm.getLaunchIntentForPackage("com.jetpack.android.prealpha");
+                Uri uri = Uri.parse("jetpack://read");
+                intent.setData(uri);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
         }
 
         if (pageType == PageType.NOTIFS) {
             // MySite fragment might not be attached to activity, so we need to remove focus point from here
             QuickStartUtils.removeQuickStartFocusPoint(findViewById(R.id.root_view_main));
             mQuickStartRepository.completeTask(QuickStartExistingSiteTask.CHECK_NOTIFICATIONS);
+
+            if (!mBuildConfigWrapper.isJetpackApp()) {
+                PackageManager pm = getPackageManager();
+                Intent intent = pm.getLaunchIntentForPackage("com.jetpack.android.prealpha");
+                Uri uri = Uri.parse("jetpack://notifications");
+                intent.setData(uri);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }
         }
 
         mViewModel.onPageChanged(
