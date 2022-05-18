@@ -283,15 +283,26 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
         is SiteNavigationAction.OpenMedia -> ActivityLauncher.viewCurrentBlogMedia(activity, action.site)
         is SiteNavigationAction.OpenUnifiedComments -> ActivityLauncher.viewUnifiedComments(activity, action.site)
         is SiteNavigationAction.OpenStats -> {
-
             // todo: annmarie switch over to Jetpack
             if (!buildConfigWrapper.isJetpackApp) {
+                // todo: annmarie - decide if the app is on the device
                 val pm: PackageManager = requireActivity().packageManager
-                val intent = pm.getLaunchIntentForPackage("com.jetpack.android.prealpha")
-                val uri = Uri.parse("jetpack://stats")
-                intent!!.data = uri
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                startActivity(intent)
+                if (pm.isAppInstalled("com.jetpack.android")) {
+                    val intent = pm.getLaunchIntentForPackage("com.jetpack.android")
+                    val uri = Uri.parse("jetpack://stats")
+                    intent!!.data = uri
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                } else {
+                    // todo: annmarie launch the play store
+                    val appPackageName = "com.jetpack.android"
+                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                        data = Uri.parse(
+                                "https://play.google.com/store/apps/details?id=$appPackageName")
+                        setPackage("com.android.vending")
+                    }
+                    startActivity(intent)
+                }
             } else {
                 ActivityLauncher.viewBlogStats(activity, action.site)
             }
@@ -645,4 +656,8 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
     fun onTrackWithTabSource(event: MySiteTrackWithTabSource) {
         viewModel.trackWithTabSource(event = event.copy(currentTab = mySiteTabType))
     }
+
+    fun PackageManager.isAppInstalled(packageName: String): Boolean =
+            getInstalledApplications(PackageManager.GET_META_DATA)
+                    .firstOrNull { it.packageName == packageName } != null
 }

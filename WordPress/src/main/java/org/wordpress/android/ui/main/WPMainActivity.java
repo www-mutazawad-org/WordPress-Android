@@ -970,12 +970,13 @@ public class WPMainActivity extends LocaleAwareActivity implements
 
             // todo: annmarie switch over to Jetpack
             if (!mBuildConfigWrapper.isJetpackApp()) {
-                PackageManager pm = getPackageManager();
-                Intent intent = pm.getLaunchIntentForPackage("com.jetpack.android.prealpha");
-                Uri uri = Uri.parse("jetpack://read");
-                intent.setData(uri);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                if (isAppInstalled("com.jetpack.android")) {
+                    Intent intent = buildIntentToLaunchJetpack("read");
+                    startActivity(intent);
+                } else {
+                    Intent intent = buildIntentToLaunchPlayStoreForJetpack();
+                    startActivity(intent);
+                }
             }
         }
 
@@ -985,12 +986,13 @@ public class WPMainActivity extends LocaleAwareActivity implements
             mQuickStartRepository.completeTask(QuickStartExistingSiteTask.CHECK_NOTIFICATIONS);
 
             if (!mBuildConfigWrapper.isJetpackApp()) {
-                PackageManager pm = getPackageManager();
-                Intent intent = pm.getLaunchIntentForPackage("com.jetpack.android.prealpha");
-                Uri uri = Uri.parse("jetpack://notifications");
-                intent.setData(uri);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+                if (isAppInstalled("com.jetpack.android")) {
+                    Intent intent = buildIntentToLaunchJetpack("notifications");
+                    startActivity(intent);
+                } else {
+                    Intent intent = buildIntentToLaunchPlayStoreForJetpack();
+                    startActivity(intent);
+                }
             }
         }
 
@@ -1651,5 +1653,33 @@ public class WPMainActivity extends LocaleAwareActivity implements
         super.onPause();
 
         QuickStartUtils.removeQuickStartFocusPoint(findViewById(R.id.root_view_main));
+    }
+
+    public boolean isAppInstalled(String packageName) {
+        try {
+            PackageManager pm = getPackageManager();
+            pm.getApplicationInfo(packageName, PackageManager.GET_META_DATA);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Intent buildIntentToLaunchJetpack(String feature) {
+        PackageManager pm = getPackageManager();
+        Intent intent = pm.getLaunchIntentForPackage("com.jetpack.android");
+        Uri uri = Uri.parse("jetpack://" + feature);
+        intent.setData(uri);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        return intent;
+    }
+
+    public Intent buildIntentToLaunchPlayStoreForJetpack() {
+        String appPackageName = "com.jetpack.android";
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(
+                "https://play.google.com/store/apps/details?id=" + appPackageName));
+        intent.setPackage("com.android.vending");
+        return intent;
     }
 }
