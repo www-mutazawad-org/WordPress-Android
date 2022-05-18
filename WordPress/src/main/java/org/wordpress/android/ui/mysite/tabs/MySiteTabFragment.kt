@@ -301,6 +301,7 @@ class MySiteTabFragment : Fragment(R.layout.my_site_tab_fragment),
                                 "https://play.google.com/store/apps/details?id=$appPackageName")
                         setPackage("com.android.vending")
                     }
+                    // todo: annmarie this can throw an exception if play store is not on the device
                     startActivity(intent)
                 }
             } else {
