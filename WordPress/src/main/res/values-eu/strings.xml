@@ -1,13 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2021-11-05 15:19:37+0000
+Translation-Revision-Date: 2022-02-20 17:49:20+0000
 Plural-Forms: nplurals=2; plural=n != 1;
-Generator: GlotPress/3.0.0-alpha.2
+Generator: GlotPress/4.0.0-alpha.1
 Language: eu_ES
 -->
 <resources>
+    <string name="reader_comment_menu_trash">Zakarrontzira mugitu</string>
+    <string name="about_automattic_wordpress">WordPress</string>
+    <string name="about_automattic_app_icon_description">App ikonoa</string>
+    <string name="about_automattic_tumblr">Tumblr</string>
+    <string name="about_automattic_source_code_item_title">Iturburu Kodea</string>
+    <string name="about_automattic_privacy_policy_item_title">Pribatutasun politika</string>
+    <string name="about_automattic_terms_of_service_item_title">Zerbitzuaren terminoak</string>
+    <string name="about_automattic_instagram_item_title">Instagram</string>
+    <string name="about_automattic_twitter_item_title">Twitter</string>
+    <string name="about_automattic_rate_us_item_title">Baloratu gaitzazu</string>
+    <string name="about_automattic_version_label">%1$s bertsioa</string>
+    <string name="about_blog">Bloga</string>
+    <string name="gutenberg_native_font_size">Letra-tipo tamaina</string>
+    <string name="about_automattic_main_page_title">%1$s(r)i buruz</string>
+    <string name="reader_comments_view_all">Ikusi iruzkin guztiak</string>
+    <string name="me_btn_about">WordPressi buruz</string>
+    <string name="gutenberg_native_featured_image">Nabarmendutako irudia</string>
+    <string name="gutenberg_native_from_clipboard">Arbeletik</string>
+    <string name="my_site_post_card_link_create_post">Bidalketa sortu</string>
+    <string name="my_site_create_first_post_title">Sortu ezazu zure lehen bidalketa</string>
+    <string name="my_site_untitled_post">Izenbururik gabe</string>
+    <string name="gutenberg_native_create_link">Sortu esteka</string>
     <string name="domains_title">Domeinuak</string>
     <string name="post_status_sticky">Itsaskorra</string>
+    <string name="domains_search_for_a_domain_button">Bilatu domeinu bat</string>
+    <string name="domains_add_a_domain">Gehitu domeinu bat</string>
+    <string name="domains_site_domains">Zure gunearen domeinuak</string>
     <string name="comment_edit_user_name">Izena</string>
     <string name="comment_edit_comment">Iruzkina</string>
     <string name="comment_edit_web_address">Web helbidea</string>
@@ -77,12 +102,18 @@ Language: eu_ES
     <string name="error_remove_viewer">Ezin izan da ikuslea kendu</string>
     <string name="error_fetch_email_followers_list">Ezin izan dira guneko e-posta jarraitzaileak eskuratu</string>
     <string name="error_fetch_followers_list">Ezin izan dira guneko jarraitzaileak eskuratu</string>
+    <string name="visual_editor">Editore bisuala</string>
     <string name="image_settings_save_toast">Aldaketak gorde dira</string>
+    <string name="image_alt_text">Testu alternatiboa</string>
     <string name="image_link_to">Estekatu:</string>
     <string name="image_width">Zabalera</string>
     <string name="image_caption">Izenburua</string>
     <string name="image_settings_dismiss_dialog_title">Gorde gabeko aldaketa baztertu?</string>
     <string name="stop_upload_dialog_title">Karga gelditu?</string>
+    <string name="alert_error_adding_media">Errore bat gertatu da mediak txertatzean</string>
+    <string name="alert_action_while_uploading">Mediak kargatzen ari zara. Mesedez itxaron kargak dirauen artean.</string>
+    <string name="alert_insert_image_html_mode">Ezin da media zuzenean txertatu HTML moduan. Itzuli modu bisualera, mesedez.</string>
+    <string name="uploading_gallery_placeholder">Galeria igotzen…</string>
     <string name="invite_sent">Gonbidapena ondo bidali da</string>
     <string name="tap_to_try_again">Egin tap berriro saiatzeko!</string>
     <string name="invite_error_some_failed">Gonbidapena bidalita baina errorea(k) gertatu da/dira!</string>
@@ -124,6 +155,7 @@ Language: eu_ES
     <string name="me_btn_app_settings">App-aren ezarpenak</string>
     <string name="editor_remove_failed_uploads">Ezabatu huts egin duten kargak</string>
     <string name="site_settings_advanced_header">Aurreratua</string>
+    <string name="button_skip">Saltatu</string>
     <string name="post_format_status">Egoera</string>
     <string name="post_format_video">Bideoa</string>
     <string name="alignment_center">Erdira</string>
@@ -275,7 +307,6 @@ Language: eu_ES
     <string name="auth_required">Hasi saioa berriro jarraitzeko.</string>
     <string name="reader_empty_posts_request_failed">Huts egin du bidalketak eskuratzeak</string>
     <string name="stats_view_authors">Egileak</string>
-    <string name="comments_fetching">Iruzkinak eskuratzen…</string>
     <string name="pages_fetching">Orrialdeak eskuratzen…</string>
     <string name="posts_fetching">Bidalketak eskuratzen…</string>
     <string name="media_fetching">Media eskuratzen…</string>
@@ -351,10 +382,6 @@ Language: eu_ES
     <string name="mnu_comment_unapprove">Baztertu</string>
     <string name="mnu_comment_spam">Spam</string>
     <string name="mnu_comment_trash">Bidali zakarrontzira</string>
-    <string name="dlg_approving_comments">Onartua</string>
-    <string name="dlg_unapproving_comments">Baztertua</string>
-    <string name="dlg_spamming_comments">Spam bezala markatzen</string>
-    <string name="dlg_trashing_comments">Zakarrontzira bidaltzen</string>
     <string name="dlg_confirm_trash_comments">Zakarrontzira bidali?</string>
     <string name="trash">Zakarrontzia</string>
     <string name="add_new_category">Gehitu kategoria berria</string>
@@ -363,8 +390,10 @@ Language: eu_ES
     <string name="local_changes">Aldaketa lokalak</string>
     <string name="wordpress_blog">WordPress-eko bloga</string>
     <string name="select_categories">Kategoriak aukeratu</string>
+    <string name="create_a_link">Esteka sortu</string>
     <string name="local_draft">Zirriborro lokala</string>
     <string name="view_in_browser">Nabigatzailean ikusi</string>
+    <string name="horizontal_alignment">Lerrokatze horizontala</string>
     <string name="file_not_found">Ezin izan da igotzeko fitxategia aurkitu. Mugitua edo ezabatua izan da?</string>
     <string name="content_required">Iruzkina beharrezkoa da</string>
     <string name="toast_comment_unedited">Iruzkina ez da aldatu</string>
@@ -453,13 +482,18 @@ Language: eu_ES
     <string name="log_in">Saioa hasi</string>
     <string name="username">Erabiltzaile-izena</string>
     <string name="reader">Irakurlea</string>
+    <string name="featured">Nabarmendutako irudi bezala erabili</string>
     <string name="no_network_title">Ez dago sarerik eskuragarri</string>
     <string name="pages">Orrialdeak</string>
+    <string name="width">Zabalera</string>
     <string name="anonymous">Anonimoa</string>
+    <string name="featured_in_post">Txertatu irudia mezuaren edukian</string>
+    <string name="caption">Legenda (hautazkoa)</string>
     <string name="posts">Bidalketak</string>
     <string name="ok">Ados</string>
     <string name="done">egina</string>
     <string name="link_enter_url">URL</string>
+    <string name="uploading">Igotzen…</string>
     <string name="app_title">WordPress Android-erako</string>
     <string name="tos">Zerbitzuaren baldintzak</string>
     <string name="version">Bertsioa:</string>
@@ -474,7 +508,6 @@ Language: eu_ES
     <string name="title">Izenburua</string>
     <string name="categories">Kategoriak</string>
     <string name="tags_separate_with_commas">Banandu etiketak komak erabiliz</string>
-    <string name="dlg_deleting_comments">Iruzkinak ezabatzen</string>
     <string name="sdcard_title">SD txartela ezinbestekoa</string>
     <string name="media">Media</string>
     <string name="delete">Ezabatu</string>
