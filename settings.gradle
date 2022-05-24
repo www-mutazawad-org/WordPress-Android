@@ -3,6 +3,7 @@ pluginManagement {
     gradle.ext.agpVersion = '7.1.1'
     gradle.ext.detektVersion = '1.15.0'
     gradle.ext.navComponentVersion = '2.3.5'
+    gradle.ext.daggerVersion = '2.41'
 
     plugins {
         id "org.jetbrains.kotlin.android" version gradle.ext.kotlinVersion
@@ -31,6 +32,9 @@ pluginManagement {
     }
     resolutionStrategy {
         eachPlugin {
+            if (requested.id.id == 'dagger.hilt.android.plugin') {
+                useModule("com.google.dagger:hilt-android-gradle-plugin:$gradle.ext.daggerVersion")
+            }
             // TODO: Remove this as soon as fetchstyle starts supporting Plugin Marker Artifacts
             if (requested.id.id == "com.automattic.android.fetchstyle") {
                 useModule("com.automattic.android:fetchstyle:1.1")
