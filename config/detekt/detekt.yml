@@ -21,3 +21,5 @@ style:
     values: ['FIXME:', 'STOPSHIP:']
   MagicNumber:
     ignoreEnums: true
+  UnusedPrivateMember:
+    allowedNames: '(_|ignored|expected|serialVersionUID)|([A-Za-z0-9]*Preview)'
