@@ -389,7 +389,7 @@ dependencies {
         exclude group: 'androidx.appcompat', module: 'appcompat'
     }
 
-    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    implementation 'com.github.bumptech.glide:glide:4.14.2'
     kapt 'com.github.bumptech.glide:compiler:4.10.0'
     implementation 'com.github.bumptech.glide:volley-integration:4.6.1@aar'
     implementation 'com.google.android.gms:play-services-code-scanner:16.0.0-beta1'
